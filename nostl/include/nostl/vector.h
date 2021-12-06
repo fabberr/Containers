@@ -545,22 +545,6 @@ typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cend() {
 // 	return reverse_iterator(this->m_data); // address one step before first element
 // }
 
-/**
- * Returns a const iterator that references the address of the first element of this vector.
-*/
-template<typename T, size_t N>
-typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cbegin() {
-	return const_iterator(this->m_data); // address of first element
-}
-
-/**
- * Returns a const iterator that references the address past the last element of this vector.
-*/
-template<typename T, size_t N>
-typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cend() {
-	return const_iterator(this->m_data + this->m_size); // address one step after last element
-}
-
 /********** Operator Overload Implementations **********/
 
 /**
