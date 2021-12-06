@@ -252,9 +252,9 @@ nostl::vector<T, N>::vector(nostl::vector<T, N>&& other) :
 {
 	// std::cout << "move-constructing instance\n";
 
-	// leave other vector in an "empty" state, m_size was set to 0 in vector::clear
+	// leave other vector in an "empty" state
 	other.m_data = nullptr;
-	other.m_capacity = 0;
+	other.m_size = other.m_capacity = 0;
 }
 
 /**
