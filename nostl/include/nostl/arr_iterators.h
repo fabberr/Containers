@@ -252,10 +252,12 @@ namespace nostl {
 	template<typename _arr>
 	class reverse_array_iterator : public array_iterator<_arr> {
 
-		/** @todo implement... */
+		// ...
 
 	}; // class reverse_array_iterator
 
 } // namespace nostl
 
 #endif // NOSTL_ARR_ITERATORS_H
+
+/** @todo implement reverse_iterator */
