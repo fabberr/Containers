@@ -40,7 +40,7 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	// testing normal iterator
+	// testing iterators
 	nostl::vector<std::string> vecStrings;
 	vecStrings.emplace_back("vector");
 	vecStrings.emplace_back("of");
