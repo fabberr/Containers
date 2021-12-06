@@ -111,79 +111,71 @@ namespace nostl {
 		inline size_t expand_to_fit() const;
 
 	public:
-		/********** Friend Function Declarations **********/
+		/********** Friend Function **********/
 
+		/**
+		 * Stream insertion operator overload for std::string specialization.
+		*/
 		template<size_t fN>
-		friend std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, fN>& rhs);
+		friend std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, fN>& rhs) {
 
+			// begin vector
+			os << "[";
+
+			// print each string
+			for (size_t i = 0; i < rhs.m_size; i++) {
+
+				// print string
+				os << '"' << rhs.m_data[i] << '"';
+
+				// if there sre still strings to print, print a comma
+				if (i + 1 < rhs.m_size) {
+					os << ", ";
+				}
+			}
+
+			// end vector
+			os << "]";
+
+			// return reference to output stream
+			return os;
+		}
+	
+		/**
+		 * Default stream insertion operator overload for any specialization.
+		*/
 		template<typename fT, size_t fN>
-		friend std::ostream& operator<<(std::ostream& os, const nostl::vector<fT, fN>& rhs);
+		friend std::ostream& operator<<(std::ostream& os, const nostl::vector<fT, fN>& rhs) {
+
+			// begin vector
+			os << "[";
+
+			// print each element
+			for (size_t i = 0; i < rhs.m_size; i++) {
+
+				// check if T is of a primitive type
+				if (std::is_arithmetic<T>::value) {
+					// print element
+					os << rhs.m_data[i];
+				} else {
+					// print element surrounded by brackets
+					os << "{ " << rhs.m_data[i] << " }";
+				}
+
+				// if there sre still elements to print, print a comma
+				if (i + 1 < rhs.m_size) {
+					os << ", ";
+				}
+			}
+
+			// end vector
+			os << "]";
+
+			// return reference to output stream
+			return os;
+		}
 		
 	}; // class vector
-
-	/********** Friend Function Implementations **********/
-
-	/**
-	 * Stream insertion operator overload for std::string specialization.
-	*/
-	template<size_t N>
-	std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& rhs) {
-
-		// begin vector
-		os << "[";
-
-		// print each string
-		for (size_t i = 0; i < rhs.m_size; i++) {
-
-			// print string
-			os << '"' << rhs.m_data[i] << '"';
-
-			// if there sre still strings to print, print a comma
-			if (i + 1 < rhs.m_size) {
-				os << ", ";
-			}
-		}
-
-		// end vector
-		os << "]";
-
-		// return reference to output stream
-		return os;
-	}
-
-	/**
-	 * Default stream insertion operator overload for any specialization.
-	*/
-	template<typename T, size_t N>
-	std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
-
-		// begin vector
-		os << "[";
-
-		// print each element
-		for (size_t i = 0; i < rhs.m_size; i++) {
-
-			// check if T is of a primitive type
-			if (std::is_arithmetic<T>::value) {
-				// print element
-				os << rhs.m_data[i];
-			} else {
-				// print element surrounded by brackets
-				os << "{ " << rhs.m_data[i] << " }";
-			}
-
-			// if there sre still elements to print, print a comma
-			if (i + 1 < rhs.m_size) {
-				os << ", ";
-			}
-		}
-
-		// end vector
-		os << "]";
-
-		// return reference to output stream
-		return os;
-	}
 
 } // namespace nostl
 
@@ -200,7 +192,7 @@ nostl::vector<T, N>::vector() :
 {
 	// std::cout << "constructing instance\n";
 
-	// Allocate memory for m_data.
+	// Allocate initial memory for m_data.
 	// Calling vector::resize with m_size set to 0 and m_data pointing to NULL only 
 	// causes a new array of lenght new_capacity (N in this case) to be allocated 
 	// and set to m_data. Since there is no old data to be copied anyway, no data 
@@ -237,7 +229,7 @@ nostl::vector<T, N>::vector(const nostl::vector<T, N>& other) :
 }
 
 /**
- * Copy constructor (from std::vector)
+ * Copy constructor (from std::vector).
 */
 template<typename T, size_t N>
 nostl::vector<T, N>::vector(const std::vector<T>& other) : 
@@ -307,7 +299,8 @@ void nostl::vector<T, N>::clear() {
 template<typename T, size_t N>
 void nostl::vector<T, N>::resize(size_t new_capacity) {
 
-	// allocate raw memory block without calling any constructors (we back to malloc bois)
+	// Allocate raw memory block (we back to malloc bois)
+	// No construtors will be called.
 	T* new_block = (T*)::operator new(sizeof (T) * new_capacity);
 
 	// Update m_size if new capacity is smaller than it, save a copy of original size.
@@ -340,7 +333,8 @@ void nostl::vector<T, N>::resize(size_t new_capacity) {
 		this->m_data[i].~T();
 	}
 
-	// deallocate old raw memory block without calling any destructors, old objects were already destroyed
+	// Deallocate old raw memory block.
+	// No destructors are called, old objects were already destroyed.
 	::operator delete(this->m_data, this->m_capacity);
 
 	this->m_data = new_block; 			// assign m_data pointer to new block
@@ -430,19 +424,22 @@ template<typename T, size_t N>
 size_t nostl::vector<T, N>::len() const { return this->m_size; }
 
 /**
- * Returns the total amount of memory currently used by the data stored in the vector in bytes.
+ * Returns the total amount of memory currently used by the data stored in the 
+ * vector in bytes.
 */
 template<typename T, size_t N>
 size_t nostl::vector<T, N>::memsize() const { return sizeof (T) * this->m_size; }
 
 /**
- * Returns the maximum number of elements that can currently be stored in the vector.
+ * Returns the maximum number of elements that can currently be stored in the 
+ * vector.
 */
 template<typename T, size_t N>
 size_t nostl::vector<T, N>::capacity() const { return this->m_capacity; }
 
 /**
- * Returns the total amount memory allocated by the vector's internal array in bytes.
+ * Returns the total amount memory allocated by the vector's underlying array 
+ * in bytes.
 */
 template<typename T, size_t N>
 size_t nostl::vector<T, N>::allocsize() const { return sizeof (T) * this->m_capacity; }
@@ -498,7 +495,8 @@ template<typename T, size_t N>
 T& nostl::vector<T, N>::back() { return this[this->m_size ? this->m_size - 1 : 0]; }
 
 /**
- * Returns an iterator that references the address of the first element of this vector.
+ * Returns an iterator that references the address of the first element of this
+ * vector.
 */
 template<typename T, size_t N>
 typename nostl::vector<T, N>::iterator nostl::vector<T, N>::begin() {
@@ -506,7 +504,8 @@ typename nostl::vector<T, N>::iterator nostl::vector<T, N>::begin() {
 }
 
 /**
- * Returns an iterator that references the address past the last element of this vector.
+ * Returns an iterator that references the address past the last element of this
+ * vector.
 */
 template<typename T, size_t N>
 typename nostl::vector<T, N>::iterator nostl::vector<T, N>::end() {
@@ -514,7 +513,8 @@ typename nostl::vector<T, N>::iterator nostl::vector<T, N>::end() {
 }
 
 /**
- * Returns a const iterator that references the address of the first element of this vector.
+ * Returns a const iterator that references the address of the first element of 
+ * this vector.
 */
 template<typename T, size_t N>
 typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cbegin() {
@@ -522,7 +522,8 @@ typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cbegin() {
 }
 
 /**
- * Returns a const iterator that references the address past the last element of this vector.
+ * Returns a const iterator that references the address past the last element of
+ * this vector.
 */
 template<typename T, size_t N>
 typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cend() {
