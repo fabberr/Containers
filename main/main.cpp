@@ -61,6 +61,13 @@ int main() {
 		std::cout << *it << std::endl;
 	}
 
+	// modify contents using iterators
+	std::cout << "\nmodifying every string except the last one" << std::endl;
+	for (itr_t it = vecStrings.begin(); it != vecStrings.end() - 1; it++) {
+		*it += " aaaa";
+	}
+	std::cout << "vecStrings (modified): " << vecStrings << std::endl;
+
 	// // reverse iterator
 	// std::cout << "\nvecStrings (reverse iterator):" << std::endl;
 	// using itr_t = nostl::vector<std::string>::reverse_iterator;
