@@ -49,6 +49,14 @@ namespace nostl {
 		virtual ~array_iterator() { this->m_ptr = nullptr; }
 	
 	public:
+		/********** Public Member Functions **********/
+		
+		/**
+		 * Returns a const pointer to the current element referenced by the iterator.
+		*/
+		const pointer get_ptr() const { return this->m_ptr; }
+
+	public:
 		/********** Increment and Decrement Operators **********/
 
 		/**

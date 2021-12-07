@@ -68,10 +68,15 @@ int main() {
 	}
 	std::cout << "vecStrings (modified): " << vecStrings << std::endl;
 
+	std::cout << "\naddresses:" << std::endl;
+	for (itr_t it = vecStrings.begin(); it != vecStrings.end(); it++) {
+		std::cout << it.get_ptr() << ": \"" << *it << '\"' << std::endl;
+	}
+
 	// // reverse iterator
 	// std::cout << "\nvecStrings (reverse iterator):" << std::endl;
-	// using itr_t = nostl::vector<std::string>::reverse_iterator;
-	// for (itr_t it = vecStrings.begin(); it != vecStrings.end(); it++) {
+	// using ritr_t = nostl::vector<std::string>::reverse_iterator;
+	// for (ritr_t it = vecStrings.begin(); it != vecStrings.end(); it++) {
 	// 	std::cout << *it << std::endl;
 	// }
 
