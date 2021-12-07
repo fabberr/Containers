@@ -15,15 +15,15 @@ namespace nostl {
 	 * container.
 	 * References an element stored in the container.
 	*/
-	template<typename _arr>
+	template<typename _iterable>
 	class array_iterator {
 	public:
 		/********** Type Definitions **********/
 		
-		typedef typename _arr::value_type 	value_type; 		/** Type of values stored in the container. */
-		typedef std::ptrdiff_t 				difference_type; 	/** Pointer difference type (for sum of pointers values in any address space). */
-		typedef value_type* 				pointer; 			/** Pointer to value. */
-		typedef value_type& 				reference; 			/** Reference to value. */
+		typedef typename _iterable::value_type 	value_type; 		/** Type of values stored in the container. */
+		typedef std::ptrdiff_t 					difference_type; 	/** Pointer difference type (for sum of pointers values in any address space). */
+		typedef value_type* 					pointer; 			/** Pointer to value. */
+		typedef value_type& 					reference; 			/** Reference to value. */
 		
 	protected:
 		/********** Protected Members **********/
@@ -134,7 +134,7 @@ namespace nostl {
 		 * The returned value may reference an element outside the container's bounds.
 		*/
 		array_iterator operator+(difference_type n) {
-			return nostl::array_iterator<_arr>(this->m_ptr + n);
+			return nostl::array_iterator<_iterable>(this->m_ptr + n);
 		}
 
 		/**
@@ -144,7 +144,7 @@ namespace nostl {
 		 * The returned value may reference an element outside the container's bounds.
 		*/
 		array_iterator operator-(difference_type n) {
-			return nostl::array_iterator<_arr>(this->m_ptr - n);
+			return nostl::array_iterator<_iterable>(this->m_ptr - n);
 		}
 	
 	public:
@@ -257,8 +257,8 @@ namespace nostl {
 	 * throught the container.
 	 * References an element stored in the container.
 	*/
-	template<typename _arr>
-	class reverse_array_iterator : public array_iterator<_arr> {
+	template<typename _iterable>
+	class reverse_array_iterator : public array_iterator<_iterable> {
 
 		// ...
 

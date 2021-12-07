@@ -239,7 +239,23 @@ nostl::vector<T, N>::vector(const std::vector<T>& other) :
 	m_size(0), 
 	m_capacity(N)
 {
-	// todo...
+	std::cout << "copy-constructing instance (from std::vector)\n";
+
+	// Allocate enough memory for m_data to fit contents of other std::vector.
+	// Calling vector::resize with m_size set to 0 and m_data pointing to NULL only 
+	// causes a new array of lenght new_capacity (other.size() in this case) to be 
+	// allocated and set to m_data. Since there is no old data to be copied anyway, 
+	// no data will be copied into this new array, copying is done here instead.
+	this->resize(other.size());
+
+	// copy each element of other std::vector into this instance
+	for (size_t i = 0; i < other.size(); i++) {
+		// Copy data from other std::vector into this vector.
+		// Use placement new for complex types so that the copy constructor is actually
+		// called.
+		new(&this->m_data[i]) T(other[i]);
+	}
+	this->m_size = other.size(); // set new size
 }
 
 /**
@@ -259,12 +275,16 @@ nostl::vector<T, N>::vector(nostl::vector<T, N>&& other) :
 	other.m_size = other.m_capacity = 0;
 }
 
+/**
+ * Initializer list constructor.
+*/
 template<typename T, size_t N>
 nostl::vector<T, N>::vector(std::initializer_list<T> list) : 
 	m_data(nullptr), 
 	m_size(0), 
 	m_capacity(N)
 {
+	// std::cout << "constructing instance from initializer list\n";
 	
 	// Allocate initial memory for m_data.
 	// Calling vector::resize with m_size set to 0 and m_data pointing to NULL only 
@@ -675,8 +695,6 @@ inline size_t nostl::vector<T, N>::expand_to_fit() const {
 
 #endif // NOSTL_VECTOR_H
 
-/** @todo list-initializable constructor, see std::initializer_list */
 /** @todo construct vector with n copies of a provided value */
-/** @todo copy from std::vector constructor */
 /** @todo erase at arbitrary index function */
 /** @todo write doxygen-style documentation for */

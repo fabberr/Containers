@@ -40,8 +40,9 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	// testing iterators and initializer lists
-	nostl::vector<std::string> vecStrings{ "vector", "of", "strings", "with", "initializer", "list" };
+	// testing iterators, initializer lists and copy constructor (from std::vector)
+	std::vector<std::string> stdVec{ "vector", "of", "strings", "with", "initializer", "list" };
+	nostl::vector<std::string> vecStrings(stdVec);
 	vecStrings.emplace_back("iwtcits");
 	std::cout << "vecStrings (operator<<):\n" << vecStrings << std::endl;
 
