@@ -722,6 +722,5 @@ inline size_t nostl::vector<T, N>::expand_to_fit() const {
 
 #endif // NOSTL_VECTOR_H
 
-/** @todo construct vector with n copies of a provided value */
 /** @todo erase at arbitrary index function */
 /** @todo write doxygen-style documentation for */
