@@ -4,16 +4,17 @@
 /********** Headers **********/
 
 // C++ library
-#include <vector> 		// std::vector
-#include <string>		// std::string
-#include <iostream> 	// std::cout, std::ostream
-#include <type_traits> 	// std::is_arithmetic
-#include <utility> 		// std::move, std::forward
+#include <vector> 			// std::vector
+#include <string>			// std::string
+#include <iostream> 		// std::cout, std::ostream
+#include <type_traits> 		// std::is_arithmetic
+#include <utility> 			// std::move, std::forward
+#include <initializer_list> // std::initializer_list
 
 // C library
-#include <cstring> 		// std::memcpy
-#include <cmath> 		// std::ceil
-#include <cassert> 		// assert macro
+#include <cstring> 	// std::memcpy
+#include <cmath> 	// std::ceil
+#include <cassert> 	// assert macro
 
 // libnostl
 #include <nostl/arr_iterators.h>
@@ -48,6 +49,7 @@ namespace nostl {
 		vector(const vector& other);
 		vector(const std::vector<T>& other);
 		vector(nostl::vector<T, N>&& other);
+		vector(std::initializer_list<T> list);
 		~vector();
 
 	public:
@@ -255,6 +257,27 @@ nostl::vector<T, N>::vector(nostl::vector<T, N>&& other) :
 	// leave other vector in an "empty" state
 	other.m_data = nullptr;
 	other.m_size = other.m_capacity = 0;
+}
+
+template<typename T, size_t N>
+nostl::vector<T, N>::vector(std::initializer_list<T> list) : 
+	m_data(nullptr), 
+	m_size(0), 
+	m_capacity(N)
+{
+	
+	// Allocate initial memory for m_data.
+	// Calling vector::resize with m_size set to 0 and m_data pointing to NULL only 
+	// causes a new array of lenght new_capacity (N in this case) to be allocated 
+	// and set to m_data. Since there is no old data to be copied anyway, no data 
+	// will be copied into this new array.
+	this->resize(N);
+
+	// Move elements from initializer list into this instance.
+	using itr_t = typename std::initializer_list<T>::iterator;
+	for (itr_t it = list.begin(); it != list.end(); it++) {
+		this->emplace_back(std::move(*it));
+	}
 }
 
 /**
