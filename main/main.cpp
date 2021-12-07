@@ -40,46 +40,12 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	// testing iterators, initializer lists and copy constructor (from std::vector)
-	std::vector<std::string> stdVec{ "vector", "of", "strings", "with", "initializer", "list" };
-	nostl::vector<std::string> vecStrings(stdVec);
-	vecStrings.emplace_back("iwtcits");
-	std::cout << "vecStrings (operator<<):\n" << vecStrings << std::endl;
+	nostl::vector<std::string> v1{ "testing", "constructors", "of", "nostl::vector" };
+	nostl::vector<std::string> v2(10, "initialized");
 
-	// range-based for loop
-	std::cout << "\nvecStrings (rage-based for loop):" << std::endl;
-	for (const auto& str : vecStrings) {
-		std::cout << str << std::endl;
-	}
-
-	// iterator
-	std::cout << "\nvecStrings (iterator):" << std::endl;
-	using itr_t = nostl::vector<std::string>::iterator;
-	for (itr_t it = vecStrings.begin(); it != vecStrings.end(); it++) {
-		std::cout << *it << std::endl;
-	}
-
-	// modify contents using iterators
-	std::cout << "\nmodifying every string except the last one" << std::endl;
-	for (itr_t it = vecStrings.begin(); it != vecStrings.end() - 1; it++) {
-		*it += " aaaa";
-	}
-	std::cout << "vecStrings (modified): " << vecStrings << std::endl;
-
-	std::cout << "\naddresses:" << std::endl;
-	for (itr_t it = vecStrings.begin(); it != vecStrings.end(); it++) {
-		std::cout << it.get_ptr() << ": \"" << *it << '\"' << std::endl;
-	}
-
-	// // reverse iterator
-	// std::cout << "\nvecStrings (reverse iterator):" << std::endl;
-	// using ritr_t = nostl::vector<std::string>::reverse_iterator;
-	// for (ritr_t it = vecStrings.begin(); it != vecStrings.end(); it++) {
-	// 	std::cout << *it << std::endl;
-	// }
+	std::cout << "v1: " << v1 << std::endl;
+	std::cout << "\nv2: " << v2 << std::endl;
+	std::cout << "  len=" << v2.len() << std::endl;
 
 	return 0;
 }
-
-/** @todo test const iterators */
-/** @todo test vector::resize */

@@ -46,10 +46,15 @@ namespace nostl {
 		/********** Constructors & Destructor Declarations **********/
 
 		vector();
+
+		vector(size_t n, const T& value = T());
+		vector(std::initializer_list<T> list);
+
 		vector(const vector& other);
 		vector(const std::vector<T>& other);
+
 		vector(nostl::vector<T, N>&& other);
-		vector(std::initializer_list<T> list);
+
 		~vector();
 
 	public:
@@ -188,6 +193,7 @@ namespace nostl {
 */
 template<typename T, size_t N>
 nostl::vector<T, N>::vector() : 
+	// initialize members
 	m_data(nullptr), 
 	m_size(0), 
 	m_capacity(N)
@@ -203,10 +209,68 @@ nostl::vector<T, N>::vector() :
 }
 
 /**
+ * @brief Constructor.
+ * Constructs a vector with n copies of the given value.
+ * 
+ * @param n [in] Number of elements. If n is bigger than template parameter N, 
+ *        the initial capacity will be set to n instead.
+ * @param value [in] Value to initialize the vector with. Optional, defaults to 
+ *        T().
+*/
+template<typename T, size_t N>
+nostl::vector<T, N>::vector(size_t n, const T& value) : 
+	// initialize members
+	m_data(nullptr), 
+	m_size(0), 
+	m_capacity(N)
+{
+	// std::cout << "constructing instance with " << n << " copies of " << value << '\n';
+	
+	// Allocate initial memory for m_data.
+	// Calling vector::resize with m_size set to 0 and m_data pointing to NULL only 
+	// causes a new array of lenght new_capacity (n or N in this case) to be 
+	// allocated and set to m_data. Since there is no old data to be copied anyway, 
+	// no data will be copied into this new array.
+	this->resize(n > N ? n : N);
+
+	// copy n instances of value into this instance
+	for (size_t i = 0; i < n; i++) {
+		this->emplace_back(value);
+	}
+}
+
+/**
+ * Initializer list constructor.
+*/
+template<typename T, size_t N>
+nostl::vector<T, N>::vector(std::initializer_list<T> list) : 
+	// initialize members
+	m_data(nullptr), 
+	m_size(0), 
+	m_capacity(N)
+{
+	// std::cout << "constructing instance from initializer list\n";
+	
+	// Allocate initial memory for m_data.
+	// Calling vector::resize with m_size set to 0 and m_data pointing to NULL only 
+	// causes a new array of lenght new_capacity (N in this case) to be allocated 
+	// and set to m_data. Since there is no old data to be copied anyway, no data 
+	// will be copied into this new array.
+	this->resize(N);
+
+	// move elements from initializer list into this instance
+	using itr_t = typename std::initializer_list<T>::iterator;
+	for (itr_t it = list.begin(); it != list.end(); it++) {
+		this->emplace_back(std::move(*it));
+	}
+}
+
+/**
  * Copy constructor.
 */
 template<typename T, size_t N>
 nostl::vector<T, N>::vector(const nostl::vector<T, N>& other) : 
+	// initialize members
 	m_data(nullptr), 
 	m_size(0), 
 	m_capacity(N)
@@ -231,10 +295,11 @@ nostl::vector<T, N>::vector(const nostl::vector<T, N>& other) :
 }
 
 /**
- * Copy constructor (from std::vector).
+ * Copy (from std::vector) constructor.
 */
 template<typename T, size_t N>
 nostl::vector<T, N>::vector(const std::vector<T>& other) : 
+	// initialize members
 	m_data(nullptr), 
 	m_size(0), 
 	m_capacity(N)
@@ -260,9 +325,12 @@ nostl::vector<T, N>::vector(const std::vector<T>& other) :
 
 /**
  * Move constructor.
+ * Transfers the ownership of the other vector's members into this instance. The 
+ * other vector will be left in an invalid "empty" state.
 */
 template<typename T, size_t N>
 nostl::vector<T, N>::vector(nostl::vector<T, N>&& other) : 
+	// initialize members
 	// transfer ownership of other vector's members into this instance
 	m_data(other.m_data), 
 	m_size(other.m_size), 
@@ -273,31 +341,6 @@ nostl::vector<T, N>::vector(nostl::vector<T, N>&& other) :
 	// leave other vector in an "empty" state
 	other.m_data = nullptr;
 	other.m_size = other.m_capacity = 0;
-}
-
-/**
- * Initializer list constructor.
-*/
-template<typename T, size_t N>
-nostl::vector<T, N>::vector(std::initializer_list<T> list) : 
-	m_data(nullptr), 
-	m_size(0), 
-	m_capacity(N)
-{
-	// std::cout << "constructing instance from initializer list\n";
-	
-	// Allocate initial memory for m_data.
-	// Calling vector::resize with m_size set to 0 and m_data pointing to NULL only 
-	// causes a new array of lenght new_capacity (N in this case) to be allocated 
-	// and set to m_data. Since there is no old data to be copied anyway, no data 
-	// will be copied into this new array.
-	this->resize(N);
-
-	// Move elements from initializer list into this instance.
-	using itr_t = typename std::initializer_list<T>::iterator;
-	for (itr_t it = list.begin(); it != list.end(); it++) {
-		this->emplace_back(std::move(*it));
-	}
 }
 
 /**
@@ -343,7 +386,7 @@ template<typename T, size_t N>
 void nostl::vector<T, N>::resize(size_t new_capacity) {
 
 	// Allocate raw memory block (we back to malloc bois)
-	// No construtors will be called.
+	// By calling ::operator new(), no construtors will be called.
 	T* new_block = (T*)::operator new(sizeof (T) * new_capacity);
 
 	// Update m_size if new capacity is smaller than it, save a copy of original size.
@@ -377,7 +420,7 @@ void nostl::vector<T, N>::resize(size_t new_capacity) {
 	}
 
 	// Deallocate old raw memory block.
-	// No destructors are called, old objects were already destroyed.
+	// No destructors will be called, old objects were already destroyed.
 	::operator delete(this->m_data, this->m_capacity);
 
 	this->m_data = new_block; 			// assign m_data pointer to new block
@@ -573,22 +616,6 @@ typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cend() {
 	return const_iterator(this->m_data + this->m_size); // address one step after last element
 }
 
-// /**
-//  * Returns a reverse iterator that references the address past the last element of this vector.
-// */
-// template<typename T, size_t N>
-// typename nostl::vector<T, N>::reverse_iterator nostl::vector<T, N>::rbegin() {
-// 	return reverse_iterator(this->m_data + this->m_size); // address one step after of last element
-// }
-
-// /**
-//  * Returns a reverse iterator that references the address of the first element of this vector.
-// */
-// template<typename T, size_t N>
-// typename nostl::vector<T, N>::reverse_iterator nostl::vector<T, N>::rend() {
-// 	return reverse_iterator(this->m_data); // address one step before first element
-// }
-
 /********** Operator Overload Implementations **********/
 
 /**
@@ -656,8 +683,8 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(const nostl::vector<T, N>& o
 
 /**
  * Move assignment operator overload.
- * Moves the data from other into this instance, effectively taking ownership of
- * the other instance.
+ * Transfers the ownership of the other vector's members into this instance. The
+ * other vector will be left in an invalid "empty" state.
 */
 template<typename T, size_t N>
 nostl::vector<T, N>& nostl::vector<T, N>::operator=(nostl::vector<T, N>&& other) {
