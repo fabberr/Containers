@@ -198,7 +198,7 @@ nostl::vector<T, N>::vector() :
 	// causes a new array of lenght new_capacity (N in this case) to be allocated 
 	// and set to m_data. Since there is no old data to be copied anyway, no data 
 	// will be copied into this new array.
-	this->resize(std::max(N, 1));
+	this->resize(std::max(N, (size_t)1));
 }
 
 /**
