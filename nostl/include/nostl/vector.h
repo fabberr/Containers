@@ -28,11 +28,11 @@ namespace nostl {
 	template<typename T, size_t N = 2>
 	class vector {
 	public:
-		/********** Type Definitions **********/
+		/********** Member Types **********/
 		
-		typedef T 												value_type; 			/** Type of values stored in the vector. */
-		typedef nostl::array_iterator<vector<T>> 				iterator; 				/** Normal iterator type. */
-		typedef nostl::array_iterator<vector<const T>> 			const_iterator; 		/** Normal const iterator type. */
+		typedef T 												value_type; 	/** Type of values stored in the vector. */
+		typedef nostl::array_iterator<nostl::vector<T>> 		iterator; 		/** Normal iterator type. */
+		typedef nostl::array_iterator<nostl::vector<const T>> 	const_iterator; /** Normal const iterator type. */
 
 	private:
 		/********** Private Members **********/
@@ -52,7 +52,7 @@ namespace nostl {
 		vector(const vector& other);
 		vector(const std::vector<T>& other);
 
-		vector(nostl::vector<T, N>&& other);
+		vector(vector<T, N>&& other);
 
 		~vector();
 
@@ -62,11 +62,11 @@ namespace nostl {
 		void clear();
 		void resize(size_t new_capacity);
 
-		nostl::vector<T, N>& push_back(const T& elem);
-		nostl::vector<T, N>& push_back(T&& elem);
+		vector& push_back(const T& elem);
+		vector& push_back(T&& elem);
 
 		template<typename... Args>
-		nostl::vector<T, N>& emplace_back(Args&&... args);
+		vector& emplace_back(Args&&... args);
 
 		void pop_back();
 
@@ -99,11 +99,11 @@ namespace nostl {
 		const T& operator[](size_t idx) const;
 		T& operator[](size_t idx);
 
-		nostl::vector<T, N>& operator+=(const T& elem);
-		nostl::vector<T, N>& operator+=(T&& elem);
+		vector& operator+=(const T& elem);
+		vector& operator+=(T&& elem);
 
-		nostl::vector<T, N>& operator=(const nostl::vector<T, N>& other);
-		nostl::vector<T, N>& operator=(nostl::vector<T, N>&& other);
+		vector& operator=(const vector& other);
+		vector& operator=(vector&& other);
 
 	private:
 		/********** Private Member Function Declarations **********/

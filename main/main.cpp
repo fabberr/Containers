@@ -44,8 +44,7 @@ int main() {
 	nostl::vector<std::string> v2(10, "initialized");
 
 	std::cout << "v1: " << v1 << std::endl;
-	std::cout << "\nv2: " << v2 << std::endl;
-	std::cout << "  len=" << v2.len() << std::endl;
+	std::cout << "\nv2: " << v2 << " len=" << v2.len() << std::endl;
 
 	return 0;
 }

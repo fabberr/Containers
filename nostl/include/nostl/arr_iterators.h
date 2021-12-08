@@ -18,7 +18,7 @@ namespace nostl {
 	template<typename _iterable>
 	class array_iterator {
 	public:
-		/********** Type Definitions **********/
+		/********** Member Types **********/
 		
 		typedef typename _iterable::value_type 	value_type; 		/** Type of values stored in the container. */
 		typedef std::ptrdiff_t 					difference_type; 	/** Pointer difference type (for sum of pointers values in any address space). */
