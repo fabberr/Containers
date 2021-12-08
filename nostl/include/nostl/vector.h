@@ -198,7 +198,7 @@ nostl::vector<T, N>::vector() :
 	// causes a new array of lenght new_capacity (N in this case) to be allocated 
 	// and set to m_data. Since there is no old data to be copied anyway, no data 
 	// will be copied into this new array.
-	this->resize(N);
+	this->resize(std::max(N, 1));
 }
 
 /**
@@ -224,7 +224,7 @@ nostl::vector<T, N>::vector(size_t count, const T& value) :
 	// causes a new array of lenght new_capacity (count or N in this case) to be 
 	// allocated and set to m_data. Since there is no old data to be copied anyway, 
 	// no data will be copied into this new array.
-	this->resize(std::max(count, N));
+	this->resize(std::max(N, count));
 
 	// copy count instances of value into this instance
 	for (size_t i = 0; i < count; i++) {
@@ -236,7 +236,7 @@ nostl::vector<T, N>::vector(size_t count, const T& value) :
  * Initializer list constructor.
 */
 template<typename T, size_t N>
-nostl::vector<T, N>::vector(std::initializer_list<T> list) : 
+nostl::vector<T, N>::vector(std::initializer_list<T> ilist) : 
 	// initialize members
 	m_data(nullptr), 
 	m_size(0), 
@@ -246,14 +246,14 @@ nostl::vector<T, N>::vector(std::initializer_list<T> list) :
 	
 	// Allocate initial memory for m_data.
 	// Calling vector::resize with m_size set to 0 and m_data pointing to NULL only 
-	// causes a new array of lenght new_capacity (N in this case) to be allocated 
-	// and set to m_data. Since there is no old data to be copied anyway, no data 
-	// will be copied into this new array.
-	this->resize(N);
+	// causes a new array of lenght new_capacity (ilist.size() in this case) to be 
+	// allocated and set to m_data. Since there is no old data to be copied anyway, 
+	// no data will be copied into this new array.
+	this->resize(std::max(N, ilist.size()));
 
 	// move elements from initializer list into this instance
 	using itr_t = typename std::initializer_list<T>::iterator;
-	for (itr_t it = list.begin(); it != list.end(); it++) {
+	for (itr_t it = ilist.begin(); it != ilist.end(); it++) {
 		this->emplace_back(std::move(*it));
 	}
 }
@@ -275,7 +275,7 @@ nostl::vector<T, N>::vector(const nostl::vector<T, N>& other) :
 	// causes a new array of lenght new_capacity (other.m_size in this case) to be 
 	// allocated and set to m_data. Since there is no old data to be copied anyway, 
 	// no data will be copied into this new array, copying is done here instead.
-	this->resize(other.m_size);
+	this->resize(std::max(N, other.m_size));
 
 	// copy each element of other vector into this instance
 	for (size_t i = 0; i < other.m_size; i++) {
@@ -304,7 +304,7 @@ nostl::vector<T, N>::vector(const std::vector<T>& other) :
 	// causes a new array of lenght new_capacity (other.size() in this case) to be 
 	// allocated and set to m_data. Since there is no old data to be copied anyway, 
 	// no data will be copied into this new array, copying is done here instead.
-	this->resize(other.size());
+	this->resize(std::max(N, other.size()));
 
 	// copy each element of other std::vector into this instance
 	for (size_t i = 0; i < other.size(); i++) {
@@ -652,7 +652,7 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator+=(T&& elem) {
 
 /**
  * Copy assignment operator overload.
- * Copies the data from other into this instance.
+ * Copies the data from other into this instance. Old values will be destroyed.
 */
 template<typename T, size_t N>
 nostl::vector<T, N>& nostl::vector<T, N>::operator=(const nostl::vector<T, N>& other) {
@@ -660,7 +660,7 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(const nostl::vector<T, N>& o
 
 	// discard old data and resize this vector to fit contents of other vector
 	this->clear();
-	this->resize(other.m_size);
+	this->resize(std::max(N, other.m_size));
 
 	// copy each element of other vector into this instance
 	for (size_t i = 0; i < other.m_size; i++) {
@@ -715,6 +715,5 @@ inline size_t nostl::vector<T, N>::expand_to_fit() const {
 
 #endif // NOSTL_VECTOR_H
 
-/** @todo never allow for allocation of 0 bytes block when constructing an instance or copying/moving from another instance */
 /** @todo erase at arbitrary index function */
 /** @todo write doxygen-style documentation for */
