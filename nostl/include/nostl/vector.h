@@ -715,5 +715,6 @@ inline size_t nostl::vector<T, N>::expand_to_fit() const {
 
 #endif // NOSTL_VECTOR_H
 
+/** @todo never allow for allocation of 0 bytes block when constructing an instance or copying/moving from another instance */
 /** @todo erase at arbitrary index function */
 /** @todo write doxygen-style documentation for */
