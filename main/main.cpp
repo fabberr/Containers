@@ -40,7 +40,7 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	nostl::vector<std::string> v1{ "testing", "constructors", "of", "nostl::vector" };
+	nostl::vector<std::string> v1{ "testing", "initializer", "list", "constructor", "of", "nostl::vector" };
 	nostl::vector<std::string> v2(10, "initialized");
 
 	std::cout << "v1: " << v1 << std::endl;

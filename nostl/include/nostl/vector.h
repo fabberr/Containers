@@ -47,7 +47,7 @@ namespace nostl {
 		vector();
 
 		vector(size_t count, const T& value = T());
-		vector(std::initializer_list<T> list);
+		vector(std::initializer_list<T> ilist);
 
 		vector(const vector& other);
 		vector(const std::vector<T>& other);
@@ -198,7 +198,7 @@ nostl::vector<T, N>::vector() :
 	// causes a new array of lenght new_capacity (N in this case) to be allocated 
 	// and set to m_data. Since there is no old data to be copied anyway, no data 
 	// will be copied into this new array.
-	this->resize(std::max(N, 1));
+	this->resize(std::max(N, (size_t)1));
 }
 
 /**
