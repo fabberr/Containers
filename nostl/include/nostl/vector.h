@@ -10,6 +10,7 @@
 #include <type_traits> 		// std::is_arithmetic
 #include <utility> 			// std::move, std::forward
 #include <initializer_list> // std::initializer_list
+#include <algorithm> 		// std::max
 
 // C library
 #include <cstring> 	// std::memcpy
@@ -32,8 +33,6 @@ namespace nostl {
 		typedef T 												value_type; 			/** Type of values stored in the vector. */
 		typedef nostl::array_iterator<vector<T>> 				iterator; 				/** Normal iterator type. */
 		typedef nostl::array_iterator<vector<const T>> 			const_iterator; 		/** Normal const iterator type. */
-		// typedef nostl::reverse_array_iterator<iterator> 		reverse_iterator; 		/** Reverse iterator type. */
-		// typedef nostl::reverse_array_iterator<const_iterator> 	const_reverse_iterator;	/** Reverse const iterator type. */
 
 	private:
 		/********** Private Members **********/
@@ -47,7 +46,7 @@ namespace nostl {
 
 		vector();
 
-		vector(size_t n, const T& value = T());
+		vector(size_t count, const T& value = T());
 		vector(std::initializer_list<T> list);
 
 		vector(const vector& other);
@@ -93,12 +92,6 @@ namespace nostl {
 
 		const_iterator cbegin();
 		const_iterator cend();
-
-		// reverse_iterator rbegin();
-		// reverse_iterator rend();
-
-		// const_reverse_iterator crbegin();
-		// const_reverse_iterator crend();
 
 	public:
 		/********** Operator Overload Declarations **********/
@@ -212,29 +205,29 @@ nostl::vector<T, N>::vector() :
  * @brief Constructor.
  * Constructs a vector with n copies of the given value.
  * 
- * @param n [in] Number of elements. If n is bigger than template parameter N, 
- *        the initial capacity will be set to n instead.
+ * @param count [in] Number of elements. If count is bigger than template 
+ *        parameter N, the initial capacity will be set to count instead.
  * @param value [in] Value to initialize the vector with. Optional, defaults to 
- *        T().
+ *        a default-constructed object of type T.
 */
 template<typename T, size_t N>
-nostl::vector<T, N>::vector(size_t n, const T& value) : 
+nostl::vector<T, N>::vector(size_t count, const T& value) : 
 	// initialize members
 	m_data(nullptr), 
 	m_size(0), 
 	m_capacity(N)
 {
-	// std::cout << "constructing instance with " << n << " copies of " << value << '\n';
+	// std::cout << "constructing instance with " << count << " copies of " << value << '\n';
 	
 	// Allocate initial memory for m_data.
 	// Calling vector::resize with m_size set to 0 and m_data pointing to NULL only 
-	// causes a new array of lenght new_capacity (n or N in this case) to be 
+	// causes a new array of lenght new_capacity (count or N in this case) to be 
 	// allocated and set to m_data. Since there is no old data to be copied anyway, 
 	// no data will be copied into this new array.
-	this->resize(n > N ? n : N);
+	this->resize(std::max(count, N));
 
-	// copy n instances of value into this instance
-	for (size_t i = 0; i < n; i++) {
+	// copy count instances of value into this instance
+	for (size_t i = 0; i < count; i++) {
 		this->emplace_back(value);
 	}
 }
