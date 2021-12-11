@@ -40,8 +40,9 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	nostl::vector<std::string> v1{ "testing", "initializer", "list", "constructor", "of", "nostl::vector" };
-	nostl::vector<std::string> v2(10, "initialized");
+	using svec_t = nostl::vector<std::string>;
+	svec_t v1{ "testing", "initializer", "list", "constructor", "of", "nostl::vector" };
+	svec_t v2(10, "initialized");
 
 	std::cout << "v1: " << v1 << std::endl;
 	std::cout << "\nv2: " << v2 << " len=" << v2.len() << std::endl;

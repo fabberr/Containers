@@ -323,8 +323,7 @@ nostl::vector<T, N>::vector(const std::vector<T>& other) :
 */
 template<typename T, size_t N>
 nostl::vector<T, N>::vector(nostl::vector<T, N>&& other) : 
-	// initialize members
-	// transfer ownership of other vector's members into this instance
+	// initialize members by transfering ownership of other vector's members into this instance
 	m_data(other.m_data), 
 	m_size(other.m_size), 
 	m_capacity(other.m_capacity)
