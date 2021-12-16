@@ -1,8 +1,9 @@
 # Create library target
 add_library(
 	nostl STATIC
-	./include/nostl/vector.h
 	./include/nostl/arr_iterators.h
+	./include/nostl/vector.h
+	./include/nostl/array.h
 )
 
 # Set the target's language to C++

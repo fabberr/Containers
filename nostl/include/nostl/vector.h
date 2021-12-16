@@ -13,6 +13,7 @@
 #include <algorithm> 		// std::max
 
 // C library
+#include <cstddef> 	// size_t, ptrdiff_t
 #include <cstring> 	// std::memcpy
 #include <cmath> 	// std::ceil
 #include <cassert> 	// assert macro
@@ -20,12 +21,13 @@
 // libnostl
 #include <nostl/arr_iterators.h>
 
-/********** vector.h declaration **********/
+/********** vector.h **********/
 
 namespace nostl {
 
 	/**
-	 * Dynamic random-access C-style array for storing data contiguously in memory.
+	 * Dynamic random-access container using an underlying C-style heap-allocated 
+	 * array for storing data contiguously in memory.
 	*/
 	template<typename T, size_t N = 2>
 	class vector {
@@ -747,6 +749,7 @@ inline size_t nostl::vector<T, N>::expand_to_fit() const {
 
 #endif // NOSTL_VECTOR_H
 
+/** @todo shrink_to_fit function */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */
 /** @todo write doxygen-style documentation for */

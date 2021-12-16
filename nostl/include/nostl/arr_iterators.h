@@ -1,11 +1,6 @@
 #ifndef NOSTL_ARR_ITERATORS_H
 #define NOSTL_ARR_ITERATORS_H
 
-/********** Included Headers **********/
-
-// C library
-#include <cstddef> // prtdiff_t
-
 /********** arr_iterator.h **********/
 
 namespace nostl {
@@ -276,5 +271,5 @@ namespace nostl {
 
 #endif // NOSTL_ARR_ITERATORS_H
 
-/** @todo standardize member type acquisition using traits */
+/** @todo standardize member type acquisition using traits uniform interface */
 /** @todo implement reverse_iterator */
