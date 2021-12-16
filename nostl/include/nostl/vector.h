@@ -66,7 +66,7 @@ namespace nostl {
 
 		vector(vector<T, N>&& other);
 
-		~vector();
+		virtual ~vector();
 
 	public:
 		/********** Public Member Function Declarations **********/
