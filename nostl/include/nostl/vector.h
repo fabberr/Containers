@@ -1,7 +1,7 @@
 #ifndef NOSTL_VECTOR_H
 #define NOSTL_VECTOR_H
 
-/********** Headers **********/
+/********** Included Headers **********/
 
 // C++ library
 #include <vector> 			// std::vector
@@ -20,6 +20,8 @@
 // libnostl
 #include <nostl/arr_iterators.h>
 
+/********** vector.h declaration **********/
+
 namespace nostl {
 
 	/**
@@ -33,9 +35,9 @@ namespace nostl {
 		typedef T 				value_type; 		/** Type of values stored in the vector. */
 		typedef std::ptrdiff_t 	difference_type; 	/** Pointer difference type (for pointer arithmetics in any address space). */
 		typedef value_type* 	pointer; 			/** Pointer to value type */
-		typedef pointer const 	const_pointer;		/** Pointer to const value type. */
+		typedef const pointer 	const_pointer;		/** Pointer to const value type. */
 		typedef value_type& 	reference; 			/** Reference to value type */
-		typedef reference const const_reference;	/** Reference to const value type */
+		typedef const reference const_reference;	/** Reference to const value type */
 
 		typedef nostl::array_iterator<nostl::vector<T>> 		iterator; 				/** Normal iterator type. */
 		typedef nostl::array_iterator<nostl::vector<const T>> 	const_iterator; 		/** Normal const iterator type. */

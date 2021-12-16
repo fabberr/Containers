@@ -1,10 +1,12 @@
 #ifndef NOSTL_ARR_ITERATORS_H
 #define NOSTL_ARR_ITERATORS_H
 
-/********** Headers **********/
+/********** Included Headers **********/
 
 // C library
 #include <cstddef> // prtdiff_t
+
+/********** arr_iterator.h **********/
 
 namespace nostl {
 
@@ -15,8 +17,8 @@ namespace nostl {
 	 * container.
 	 * References an element stored in the container.
 	 * 
-	 * @tparam _iterable Either a pointer-to-value reference or a class of the 
-	 *         nostl::array_iterator hierarchy
+	 * @tparam _iterable Either a nostl::vector or a class of the 
+	 *         nostl::array_iterator hierarchy containing necessary member types.
 	*/
 	template<typename _iterable>
 	class array_iterator {
@@ -260,8 +262,8 @@ namespace nostl {
 	 * throught the container.
 	 * References an element stored in the container.
 	 * 
-	 * @tparam _iterable Either a pointer-to-value reference or a class of the 
-	 *         nostl::array_iterator hierarchy
+	 * @tparam _iterable Either a nostl::vector or a class of the 
+	 *         nostl::array_iterator hierarchy containing necessary member types.
 	*/
 	template<typename _iterable>
 	class reverse_array_iterator : public array_iterator<_iterable> {
@@ -274,4 +276,5 @@ namespace nostl {
 
 #endif // NOSTL_ARR_ITERATORS_H
 
+/** @todo standardize member type acquisition using traits */
 /** @todo implement reverse_iterator */
