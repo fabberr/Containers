@@ -10,7 +10,7 @@
 #include <type_traits> 		// std::is_arithmetic
 #include <utility> 			// std::move, std::forward
 #include <initializer_list> // std::initializer_list
-#include <algorithm> 		// std::max
+#include <algorithm> 		// std::max, std::move
 
 // C library
 #include <cstring> 	// std::memcpy
@@ -29,10 +29,14 @@ namespace nostl {
 	class vector {
 	public:
 		/********** Member Types **********/
-		
-		typedef T 												value_type; 	/** Type of values stored in the vector. */
-		typedef nostl::array_iterator<nostl::vector<T>> 		iterator; 		/** Normal iterator type. */
-		typedef nostl::array_iterator<nostl::vector<const T>> 	const_iterator; /** Normal const iterator type. */
+
+		typedef T 												value_type; 		/** Type of values stored in the vector. */
+		typedef std::ptrdiff_t 									difference_type; 	/** Pointer difference type (for pointer arithmetics in any address space). */
+		typedef value_type* 									pointer; 			/** Pointer to value type */
+		typedef value_type& 									reference; 			/** Reference to value type */
+
+		typedef nostl::array_iterator<nostl::vector<T>> 		iterator; 			/** Normal iterator type. */
+		typedef nostl::array_iterator<nostl::vector<const T>> 	const_iterator; 	/** Normal const iterator type. */
 
 	private:
 		/********** Private Members **********/
@@ -69,6 +73,8 @@ namespace nostl {
 		vector& emplace_back(Args&&... args);
 
 		void pop_back();
+
+		void erase(size_t idx);
 
 		size_t len() const;
 		size_t memsize() const;
@@ -496,6 +502,27 @@ void nostl::vector<T, N>::pop_back() {
 }
 
 /**
+ * Removes the element at the given position.
+*/
+template<typename T, size_t N>
+void nostl::vector<T, N>::erase(size_t idx) {
+
+	// assertions
+	assert(idx < this->m_size);
+
+	// destroy element at given idx
+	this->m_data[idx].~T();
+
+	// rearranje array
+	for (size_t i = idx; i < this->m_size - 1; i++) {
+		this->m_data[i] = std::move(this->m_data[i + 1]);
+	}
+
+	// destroy last element
+	this->pop_back();
+}
+
+/**
  * Returns the number of elements currently stored in the vector.
 */
 template<typename T, size_t N>
@@ -714,5 +741,7 @@ inline size_t nostl::vector<T, N>::expand_to_fit() const {
 
 #endif // NOSTL_VECTOR_H
 
-/** @todo erase at arbitrary index function */
+/** @todo erase at arbitrary position function */
+/** @todo insert at arbitrary position function */
+/** @todo erase range function */
 /** @todo write doxygen-style documentation for */

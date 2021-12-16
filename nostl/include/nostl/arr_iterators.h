@@ -14,16 +14,19 @@ namespace nostl {
 	 * such that simple pointer arithmetics can be used to interate throught the 
 	 * container.
 	 * References an element stored in the container.
+	 * 
+	 * @tparam _iterable Either a pointer-to-value reference or a class of the 
+	 *         nostl::array_iterator hierarchy
 	*/
 	template<typename _iterable>
 	class array_iterator {
 	public:
 		/********** Member Types **********/
 		
-		typedef typename _iterable::value_type 	value_type; 		/** Type of values stored in the container. */
-		typedef std::ptrdiff_t 					difference_type; 	/** Pointer difference type (for sum of pointers values in any address space). */
-		typedef value_type* 					pointer; 			/** Pointer to value. */
-		typedef value_type& 					reference; 			/** Reference to value. */
+		typedef typename _iterable::value_type 		value_type; 		/** Type of values stored in the container. */
+		typedef typename _iterable::difference_type difference_type; 	/** Pointer difference type (for pointer arithmetics in any address space). */
+		typedef typename _iterable::pointer 		pointer; 			/** Pointer to value type. */
+		typedef typename _iterable::reference		reference; 			/** Reference to value type. */
 		
 	protected:
 		/********** Protected Members **********/
@@ -256,6 +259,9 @@ namespace nostl {
 	 * in memory, such that simple pointer arithmetics can be used to interate 
 	 * throught the container.
 	 * References an element stored in the container.
+	 * 
+	 * @tparam _iterable Either a pointer-to-value reference or a class of the 
+	 *         nostl::array_iterator hierarchy
 	*/
 	template<typename _iterable>
 	class reverse_array_iterator : public array_iterator<_iterable> {
