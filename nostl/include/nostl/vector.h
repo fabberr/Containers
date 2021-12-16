@@ -10,7 +10,7 @@
 #include <type_traits> 		// std::is_arithmetic
 #include <utility> 			// std::move, std::forward
 #include <initializer_list> // std::initializer_list
-#include <algorithm> 		// std::max, std::move
+#include <algorithm> 		// std::max
 
 // C library
 #include <cstring> 	// std::memcpy
@@ -30,13 +30,17 @@ namespace nostl {
 	public:
 		/********** Member Types **********/
 
-		typedef T 												value_type; 		/** Type of values stored in the vector. */
-		typedef std::ptrdiff_t 									difference_type; 	/** Pointer difference type (for pointer arithmetics in any address space). */
-		typedef value_type* 									pointer; 			/** Pointer to value type */
-		typedef value_type& 									reference; 			/** Reference to value type */
+		typedef T 				value_type; 		/** Type of values stored in the vector. */
+		typedef std::ptrdiff_t 	difference_type; 	/** Pointer difference type (for pointer arithmetics in any address space). */
+		typedef value_type* 	pointer; 			/** Pointer to value type */
+		typedef pointer const 	const_pointer;		/** Pointer to const value type. */
+		typedef value_type& 	reference; 			/** Reference to value type */
+		typedef reference const const_reference;	/** Reference to const value type */
 
-		typedef nostl::array_iterator<nostl::vector<T>> 		iterator; 			/** Normal iterator type. */
-		typedef nostl::array_iterator<nostl::vector<const T>> 	const_iterator; 	/** Normal const iterator type. */
+		typedef nostl::array_iterator<nostl::vector<T>> 		iterator; 				/** Normal iterator type. */
+		typedef nostl::array_iterator<nostl::vector<const T>> 	const_iterator; 		/** Normal const iterator type. */
+		// typedef nostl::reverse_array_iterator<iterator> 		reverse_iterator; 		/** Reverse iterator type. */
+		// typedef nostl::reverse_array_iterator<const_iterator> 	const_reverse_iterator; /** Reverse const iterator type. */
 
 	private:
 		/********** Private Members **********/
@@ -591,13 +595,13 @@ T& nostl::vector<T, N>::front() { return this[0]; }
  * Returns a const reference to the last element.
 */
 template<typename T, size_t N>
-const T& nostl::vector<T, N>::back() const { return this[this->m_size ? this->m_size - 1 : 0]; }
+const T& nostl::vector<T, N>::back() const { return this->m_size ? this[this->m_size - 1] : this[0]; }
 
 /**
  * Returns a reference to the last element.
 */
 template<typename T, size_t N>
-T& nostl::vector<T, N>::back() { return this[this->m_size ? this->m_size - 1 : 0]; }
+T& nostl::vector<T, N>::back() { return this->m_size ? this[this->m_size - 1] : this[0]; }
 
 /**
  * Returns an iterator that references the address of the first element of this
@@ -741,7 +745,6 @@ inline size_t nostl::vector<T, N>::expand_to_fit() const {
 
 #endif // NOSTL_VECTOR_H
 
-/** @todo erase at arbitrary position function */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */
 /** @todo write doxygen-style documentation for */
