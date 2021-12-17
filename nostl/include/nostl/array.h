@@ -10,6 +10,7 @@
 
 // C library
 #include <cstddef> // size_t. ptrdiff_t
+#include <cstring> // std::memmove, std::memcpy
 
 // libnostl
 #include <nostl/arr_iterators.h>
@@ -49,14 +50,14 @@ namespace nostl
 	public:
 		/********** Constructors & Destructor Declarations **********/
 		
-		/** Default default constructor. */
-		array() = default;
+		// /** Default default constructor. */
+		// array() = default;
 
-		/** Default copy constructor. */
-		array(const array& other) = default;
+		// /** Default copy constructor. */
+		// array(const array& other);
 
-		/** Default move constructor. */
-		array(array&& other) = default;
+		// /** Default move constructor. */
+		// array(array&& other);
 
 		/** Default destructor. */
 		virtual ~array() = default;
@@ -362,12 +363,13 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
 	// std::cout << "move-assigning into instance\n";
 	
 	// transfer ownership of other array's members into this instance
-	this->m_data = std::move(other.m_data);
-
-	// leave other array in an "empty" state
-	other.m_data = {};
+	this->m_data = other.m_data;
 
 	return *this;
 }
 
 #endif // NOSTL_ARRAY
+
+/** @todo implement copy and move constructors using memcpy and memmove */
+/** @todo fix copy assignment operator */
+/** @todo fix move assignment operator */
