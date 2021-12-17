@@ -28,7 +28,7 @@ namespace nostl
 	public:
 		/********** Member Types **********/
 
-		typedef T 				value_type; 		/** Type of values stored in the vector. */
+		typedef T 				value_type; 		/** Type of values stored in the array. */
 		typedef size_t 			size_type; 			/** Size type. */
 		typedef std::ptrdiff_t 	difference_type; 	/** Pointer difference type (for pointer arithmetics in any address space). */
 
@@ -44,7 +44,7 @@ namespace nostl
 	private:
 		/********** Private Members **********/
 		
-		value_type m_data; /** Stack-allocated array for storing elements. */
+		value_type m_data[N]; 	/** Stack-allocated array for storing elements. */
 	
 	public:
 		/********** Constructors & Destructor Declarations **********/
@@ -52,23 +52,26 @@ namespace nostl
 		/** Default default constructor. */
 		array() = default;
 
-		array(const_reference value = T());
-		array(std::initializer_list<value_type> ilist);
-
-		/** Default copy constructor */
+		/** Default copy constructor. */
 		array(const array& other) = default;
 
-		array(const std::array<value_type, N>& other);
-
-		/** Default move constructor */
+		/** Default move constructor. */
 		array(array&& other) = default;
 
-		virtual ~array();
+		/** Default destructor. */
+		virtual ~array() = default;
+
+		array(const_reference value = T());
+		array(const std::initializer_list<value_type>& ilist);
+
+		array(const std::array<value_type, N>& other);
 	
 	public:
 		/********** Public Member Function Declarations **********/
 
-		constexpr size_type len();
+		inline constexpr size_type len();
+
+		constexpr pointer data();
 
 		const_reference at(size_type idx) const;
 		reference at(size_type idx);
@@ -95,7 +98,7 @@ namespace nostl
 		array<T, N>& operator=(array<T, N>&& other);
 
 	public:
-		/********** Friend Function **********/
+		/********** Friend Functions **********/
 
 		/**
 		 * Stream insertion operator overload for std::string specialization.
@@ -107,13 +110,13 @@ namespace nostl
 			os << "[";
 
 			// print each string
-			for (size_t i = 0; i < rhs.m_size; i++) {
+			for (size_t i = 0; i < fN; i++) {
 
 				// print string
 				os << '"' << rhs.m_data[i] << '"';
 
 				// if there sre still strings to print, print a comma
-				if (i + 1 < rhs.m_size) {
+				if (i + 1 < fN) {
 					os << ", ";
 				}
 			}
@@ -135,7 +138,7 @@ namespace nostl
 			os << "[";
 
 			// print each element
-			for (size_t i = 0; i < rhs.m_size; i++) {
+			for (size_t i = 0; i < fN; i++) {
 
 				// check if T is of a primitive type
 				if (std::is_arithmetic<T>::value) {
@@ -147,7 +150,7 @@ namespace nostl
 				}
 
 				// if there sre still elements to print, print a comma
-				if (i + 1 < rhs.m_size) {
+				if (i + 1 < fN) {
 					os << ", ";
 				}
 			}
@@ -162,5 +165,209 @@ namespace nostl
 	}; // class array
 
 } // namespace nostl
+
+/********** Constructors & Destructor Implementations **********/
+
+
+/**
+ * @brief Constructor.
+ * Constructs an array with N copies of the given value.
+ * 
+ * @param value [in] Value to initialize the array with. Optional, defaults to a
+ * default-constructed object of type T.
+*/
+template<typename T, size_t N>
+nostl::array<T, N>::array(const T& value) {
+
+	// copy N instances of value into this array
+	for (const auto& e : *this) {
+		*e = value;
+	}
+}
+
+/**
+ * Initializer list constructor.
+*/
+template<typename T, size_t N>
+nostl::array<T, N>::array(const std::initializer_list<T>& ilist) {
+
+	// move elements from initializer list into this instance
+	size_t i = 0;
+	for (const auto& value : ilist) {
+		this->m_data[i++] = std::move(value);
+	}
+}
+
+/**
+ * Copy constructor (from std::array)
+*/
+template<typename T, size_t N>
+nostl::array<T, N>::array(const std::array<T, N>& other) {
+
+	using itr_t = typename nostl::array<T, N>::iterator;
+	using stditr_t = typename std::array<T, N>::const_iterator;
+
+	// copy elements from other array into this instance
+	itr_t i = this->begin();
+	stditr_t j = other.begin();
+	while (i != this->end()) {
+		*i++ = *j++;
+	}
+}
+
+/********** Public Member Function Implementations **********/
+
+/**
+ * Returns the number of elements that can be stored in the array.
+*/
+template<typename T, size_t N>
+inline constexpr size_t nostl::array<T, N>::len() { return N; }
+
+/**
+ * Returns a pointer to the underlying array used to store the data.
+*/
+template<typename T, size_t N>
+constexpr T* nostl::array<T, N>::data() {
+	return this->m_data;
+}
+
+/**
+ * const member access function.
+ * Returns a const reference to an element in the array given its index.
+*/
+template<typename T, size_t N>
+const T& nostl::array<T, N>::at(size_t idx) const {
+	assert(idx < this->len());
+	return this[idx];
+}
+
+/**
+ * Member access function.
+ * Returns a reference to an element in the array given its index.
+*/
+template<typename T, size_t N>
+T& nostl::array<T, N>::at(size_t idx) {
+	assert(idx < this->len());
+	return this[idx];
+}
+
+/**
+ * Returns a const reference to the first element.
+*/
+template<typename T, size_t N>
+const T& nostl::array<T, N>::front() const { return this[0]; }
+
+/**
+ * Returns a reference to the first element.
+*/
+template<typename T, size_t N>
+T& nostl::array<T, N>::front() { return this[0]; }
+
+/**
+ * Returns a const reference to the last element.
+*/
+template<typename T, size_t N>
+const T& nostl::array<T, N>::back() const { return this->m_size ? this[this->m_size - 1] : this[0]; }
+
+/**
+ * Returns a reference to the last element.
+*/
+template<typename T, size_t N>
+T& nostl::array<T, N>::back() { return this->m_size ? this[this->m_size - 1] : this[0]; }
+
+/**
+ * Returns an iterator that references the address of the first element of this
+ * array.
+*/
+template<typename T, size_t N>
+typename nostl::array<T, N>::iterator nostl::array<T, N>::begin() {
+	return iterator(this->m_data);
+}
+
+/**
+ * Returns an iterator that references the address past the last element of this
+ * array.
+*/
+template<typename T, size_t N>
+typename nostl::array<T, N>::iterator nostl::array<T, N>::end() {
+	return iterator(this->m_data + N);
+}
+
+/**
+ * Returns a const iterator that references the address of the first element of 
+ * this array.
+*/
+template<typename T, size_t N>
+typename nostl::array<T, N>::const_iterator nostl::array<T, N>::cbegin() {
+	return const_iterator(this->m_data);
+}
+
+/**
+ * Returns a const iterator that references the address past the last element of
+ * this array.
+*/
+template<typename T, size_t N>
+typename nostl::array<T, N>::const_iterator nostl::array<T, N>::cend() {
+	return const_iterator(this->m_data + N);
+}
+
+/********** Operator Overload Implementations **********/
+
+/**
+ * Subscript operator overload (const).
+ * Returns a const reference to an element in the array given its index.
+*/
+template<typename T, size_t N>
+const T& nostl::array<T, N>::operator[](size_type idx) const {
+	assert(idx < this->len());
+	return this->m_data[idx];
+}
+
+/**
+ * Subscript operator overload.
+ * Returns a reference to an element in the array given its index.
+*/
+template<typename T, size_t N>
+T& nostl::array<T, N>::operator[](size_type idx) {
+	assert(idx < this->len());
+	return this->m_data[idx];
+}
+
+/**
+ * Copy assignment operator overload.
+ * Copies the data from other into this instance. Old values will be lsot.
+*/
+template<typename T, size_t N>
+nostl::array<T, N>& nostl::array<T, N>::operator=(const nostl::array<T, N>& other) {
+
+	using itr_t = typename nostl::array<T, N>::iterator;
+
+	// copy each element of other array into this instance
+	itr_t i = this->begin(), j = other.begin();
+	while (i != this->end()) {
+		*i++ = *j++;
+	}
+
+	return *this;
+}
+
+/**
+ * Move assignment operator overload.
+ * Transfers the ownership of the other array's members into this instance. Old 
+ * values will be lost
+ * The other array will be left in an invalid "empty" state.
+*/
+template<typename T, size_t N>
+nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
+	// std::cout << "move-assigning into instance\n";
+	
+	// transfer ownership of other array's members into this instance
+	this->m_data = std::move(other.m_data);
+
+	// leave other array in an "empty" state
+	other.m_data = {};
+
+	return *this;
+}
 
 #endif // NOSTL_ARRAY

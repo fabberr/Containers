@@ -63,7 +63,7 @@ namespace nostl {
 		vector();
 
 		vector(size_t count, const T& value = T());
-		vector(std::initializer_list<T> ilist);
+		vector(const std::initializer_list<T>& ilist);
 
 		vector(const vector& other);
 		vector(const std::vector<T>& other);
@@ -129,7 +129,7 @@ namespace nostl {
 		inline size_t expand_to_fit() const;
 
 	public:
-		/********** Friend Function **********/
+		/********** Friend Functions **********/
 
 		/**
 		 * Stream insertion operator overload for std::string specialization.
@@ -244,7 +244,7 @@ nostl::vector<T, N>::vector(size_t count, const T& value) :
 	// no data will be copied into this new array.
 	this->resize(std::max(N, count));
 
-	// copy count instances of value into this instance
+	// append count instances of value into this vector
 	for (size_t i = 0; i < count; i++) {
 		this->emplace_back(value);
 	}
@@ -254,7 +254,7 @@ nostl::vector<T, N>::vector(size_t count, const T& value) :
  * Initializer list constructor.
 */
 template<typename T, size_t N>
-nostl::vector<T, N>::vector(std::initializer_list<T> ilist) : 
+nostl::vector<T, N>::vector(const std::initializer_list<T>& ilist) : 
 	// initialize members
 	m_data(nullptr), 
 	m_size(0), 
@@ -714,12 +714,17 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(const nostl::vector<T, N>& o
 
 /**
  * Move assignment operator overload.
- * Transfers the ownership of the other vector's members into this instance. The
- * other vector will be left in an invalid "empty" state.
+ * Transfers the ownership of the other vector's members into this instance. Old
+ * values will be destroyed.
+ * The other vector will be left in an invalid "empty" state.
 */
 template<typename T, size_t N>
 nostl::vector<T, N>& nostl::vector<T, N>::operator=(nostl::vector<T, N>&& other) {
 	// std::cout << "move-assigning into instance\n";
+	
+	// discard old data and resize this vector to fit contents of other vector
+	this->clear();
+	this->resize(std::max(N, other.m_size));
 	
 	// transfer ownership of other vector's members into this instance
 	this->m_data = other.m_data;

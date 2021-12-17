@@ -5,9 +5,11 @@
 #include <utility> 	// std::move
 #include <string> 	// std::string
 #include <vector> 	// std::vector
+#include <array> 	// std::array
 
 // libnostl
-#include <nostl/vector.h> // nostl::vector
+#include <nostl/vector.h> 	// nostl::vector
+#include <nostl/array.h> 	// nostl::array
 
 /********** Functions **********/
 
@@ -40,11 +42,10 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	nostl::vector<int> vi{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	std::cout << vi << std::endl;
+	std::array<int, 10> stdarr{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-	vi.erase(4);
-	std::cout << vi << std::endl;
+	nostl::array<int, 10> arr(stdarr);
+	std::cout << "arr: " << arr << std::endl;
 
 	return 0;
 }
