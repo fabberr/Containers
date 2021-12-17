@@ -35,14 +35,18 @@ namespace nostl {
 		/********** Member Types **********/
 
 		typedef T 				value_type; 		/** Type of values stored in the vector. */
+		typedef size_t 			size_type; 			/** Size type. */
 		typedef std::ptrdiff_t 	difference_type; 	/** Pointer difference type (for pointer arithmetics in any address space). */
-		typedef value_type* 	pointer; 			/** Pointer to value type */
-		typedef const pointer 	const_pointer;		/** Pointer to const value type. */
-		typedef value_type& 	reference; 			/** Reference to value type */
-		typedef const reference const_reference;	/** Reference to const value type */
 
-		typedef nostl::array_iterator<nostl::vector<T>> 		iterator; 				/** Normal iterator type. */
-		typedef nostl::array_iterator<nostl::vector<const T>> 	const_iterator; 		/** Normal const iterator type. */
+		typedef T* 			pointer; 		/** Pointer to value type */
+		typedef const T* 	const_pointer; 	/** Pointer to const value type. */
+
+		typedef T& 			reference; 			/** Reference to value type */
+		typedef const T& 	const_reference; 	/** Reference to const value type */
+
+		typedef nostl::array_iterator<nostl::vector<T>> 		iterator; 		/** Normal iterator type. */
+		typedef nostl::array_iterator<nostl::vector<const T>> 	const_iterator; /** Normal const iterator type. */
+
 		// typedef nostl::reverse_array_iterator<iterator> 		reverse_iterator; 		/** Reverse iterator type. */
 		// typedef nostl::reverse_array_iterator<const_iterator> 	const_reverse_iterator; /** Reverse const iterator type. */
 
@@ -311,7 +315,7 @@ nostl::vector<T, N>::vector(const std::vector<T>& other) :
 	m_size(0), 
 	m_capacity(N)
 {
-	std::cout << "copy-constructing instance (from std::vector)\n";
+	// std::cout << "copy-constructing instance (from std::vector)\n";
 
 	// Allocate enough memory for m_data to fit contents of other std::vector.
 	// Calling vector::resize with m_size set to 0 and m_data pointing to NULL only 
