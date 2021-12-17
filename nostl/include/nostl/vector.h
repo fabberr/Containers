@@ -574,7 +574,7 @@ bool nostl::vector<T, N>::empty() const { return this->m_size == 0; }
 template<typename T, size_t N>
 const T& nostl::vector<T, N>::at(size_t idx) const {
 	assert(idx < this->m_size);
-	return this[idx];
+	return (*this)[idx];
 }
 
 /**
@@ -584,32 +584,32 @@ const T& nostl::vector<T, N>::at(size_t idx) const {
 template<typename T, size_t N>
 T& nostl::vector<T, N>::at(size_t idx) {
 	assert(idx < this->m_size);
-	return this[idx];
+	return (*this)[idx];
 }
 
 /**
  * Returns a const reference to the first element.
 */
 template<typename T, size_t N>
-const T& nostl::vector<T, N>::front() const { return this[0]; }
+const T& nostl::vector<T, N>::front() const { return (*this)[0]; }
 
 /**
  * Returns a reference to the first element.
 */
 template<typename T, size_t N>
-T& nostl::vector<T, N>::front() { return this[0]; }
+T& nostl::vector<T, N>::front() { return (*this)[0]; }
 
 /**
  * Returns a const reference to the last element.
 */
 template<typename T, size_t N>
-const T& nostl::vector<T, N>::back() const { return this->m_size ? this[this->m_size - 1] : this[0]; }
+const T& nostl::vector<T, N>::back() const { return (*this)[this->m_size ? this->m_size - 1 : 0]; }
 
 /**
  * Returns a reference to the last element.
 */
 template<typename T, size_t N>
-T& nostl::vector<T, N>::back() { return this->m_size ? this[this->m_size - 1] : this[0]; }
+T& nostl::vector<T, N>::back() { return (*this)[this->m_size ? this->m_size - 1 : 0]; }
 
 /**
  * Returns an iterator that references the address of the first element of this
@@ -725,7 +725,7 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(nostl::vector<T, N>&& other)
 	// discard old data and resize this vector to fit contents of other vector
 	this->clear();
 	this->resize(std::max(N, other.m_size));
-	
+
 	// transfer ownership of other vector's members into this instance
 	this->m_data = other.m_data;
 	this->m_size = other.m_size;

@@ -180,8 +180,8 @@ template<typename T, size_t N>
 nostl::array<T, N>::array(const T& value) {
 
 	// copy N instances of value into this array
-	for (const auto& e : *this) {
-		*e = value;
+	for (auto& e : *this) {
+		e = value;
 	}
 }
 
@@ -238,7 +238,7 @@ constexpr T* nostl::array<T, N>::data() {
 template<typename T, size_t N>
 const T& nostl::array<T, N>::at(size_t idx) const {
 	assert(idx < this->len());
-	return this[idx];
+	return (*this)[idx];
 }
 
 /**
@@ -248,32 +248,32 @@ const T& nostl::array<T, N>::at(size_t idx) const {
 template<typename T, size_t N>
 T& nostl::array<T, N>::at(size_t idx) {
 	assert(idx < this->len());
-	return this[idx];
+	return (*this)[idx];
 }
 
 /**
  * Returns a const reference to the first element.
 */
 template<typename T, size_t N>
-const T& nostl::array<T, N>::front() const { return this[0]; }
+const T& nostl::array<T, N>::front() const { return (*this)[0]; }
 
 /**
  * Returns a reference to the first element.
 */
 template<typename T, size_t N>
-T& nostl::array<T, N>::front() { return this[0]; }
+T& nostl::array<T, N>::front() { return (*this)[0]; }
 
 /**
  * Returns a const reference to the last element.
 */
 template<typename T, size_t N>
-const T& nostl::array<T, N>::back() const { return this->m_size ? this[this->m_size - 1] : this[0]; }
+const T& nostl::array<T, N>::back() const { return (*this)[this->len() ? this->len() - 1 : 0]; }
 
 /**
  * Returns a reference to the last element.
 */
 template<typename T, size_t N>
-T& nostl::array<T, N>::back() { return this->m_size ? this[this->m_size - 1] : this[0]; }
+T& nostl::array<T, N>::back() { return (*this)[this->len() ? this->len() - 1 : 0]; }
 
 /**
  * Returns an iterator that references the address of the first element of this

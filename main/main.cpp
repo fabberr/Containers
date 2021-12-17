@@ -42,10 +42,9 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	std::array<int, 10> stdarr{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-
-	nostl::array<int, 10> arr(stdarr);
-	std::cout << "arr: " << arr << std::endl;
+	nostl::vector<int, 10> arr{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	std::cout << arr.at(0) << '\n';
+	std::cout << arr.at(9) << '\n';
 
 	return 0;
 }
