@@ -93,68 +93,13 @@ namespace nostl
 		array<T, N>& operator=(array<T, N>&& other);
 
 	public:
-		/********** Friend Functions **********/
+		/********** Free Function Declarations **********/
 
-		/**
-		 * Default stream insertion operator overload for any specialization.
-		*/
-		friend std::ostream& operator<<(std::ostream& os, const nostl::array<T, N>& rhs) {
+		template<typename _T, size_t _N>
+		friend std::ostream& operator<<(std::ostream& os, const nostl::array<_T, _N>& rhs);
 
-			// begin array
-			os << "[";
-
-			// print each element
-			for (size_t i = 0; i < N; i++) {
-
-				// check if T is of a primitive type
-				if (std::is_arithmetic<T>::value) {
-					// print element
-					os << rhs.m_data[i];
-				} else {
-					// print element surrounded by brackets
-					os << "{ " << rhs.m_data[i] << " }";
-				}
-
-				// if there sre still elements to print, print a comma
-				if (i + 1 < N) {
-					os << ", ";
-				}
-			}
-
-			// end array
-			os << "]";
-
-			// return reference to output stream
-			return os;
-		}
-		
-		// /**
-		//  * Stream insertion operator overload for std::string specialization.
-		// */
-		// template<size_t fN>
-		// friend std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, fN>& rhs) {
-
-		// 	// begin array
-		// 	os << "[";
-
-		// 	// print each string
-		// 	for (size_t i = 0; i < fN; i++) {
-
-		// 		// print string
-		// 		os << '"' << rhs.m_data[i] << '"';
-
-		// 		// if there sre still strings to print, print a comma
-		// 		if (i + 1 < fN) {
-		// 			os << ", ";
-		// 		}
-		// 	}
-
-		// 	// end array
-		// 	os << "]";
-
-		// 	// return reference to output stream
-		// 	return os;
-		// }
+		template<size_t _N>
+		friend std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, _N>& rhs);
 	
 	}; // class array
 
@@ -497,6 +442,70 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
 	}
 
 	return *this;
+}
+
+/********** Free Function Implementations **********/
+
+/**
+ * Default stream insertion operator overload for any specialization.
+*/
+template<typename T, size_t N>
+std::ostream& operator<<(std::ostream& os, const nostl::array<T, N>& rhs) {
+
+	// begin array
+	os << "[";
+
+	// insert each element
+	for (size_t i = 0; i < N; i++) {
+
+		// check if T is of a primitive type
+		if (std::is_arithmetic<T>::value) {
+			// insert element
+			os << rhs[i];
+		} else {
+			// insert element surrounded by brackets
+			os << "{ " << rhs[i] << " }";
+		}
+
+		// if there are still elements to insert, insert a comma
+		if (i + 1 < N) {
+			os << ", ";
+		}
+	}
+
+	// end array
+	os << "]";
+
+	// return reference to output stream
+	return os;
+}
+
+/**
+ * Stream insertion operator overload for std::string specialization.
+*/
+template<size_t N>
+std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& rhs) {
+
+	// begin array
+	os << "[";
+
+	// insert each string
+	for (size_t i = 0; i < N; i++) {
+
+		// insert string
+		os << '"' << rhs.m_data[i] << '"';
+
+		// if there are still strings to insert, insert a comma
+		if (i + 1 < N) {
+			os << ", ";
+		}
+	}
+
+	// end array
+	os << "]";
+
+	// return reference to output stream
+	return os;
 }
 
 #endif // NOSTL_ARRAY

@@ -129,67 +129,13 @@ namespace nostl {
 		inline size_t expand_to_fit() const;
 
 	public:
-		/********** Friend Functions **********/
+		/********** Free Function Declarations **********/
 
-		/**
-		 * Default stream insertion operator overload for any specialization.
-		*/
-		friend std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
+		template<typename _T, size_t _N>
+		friend std::ostream& operator<<(std::ostream& os, const nostl::vector<_T, _N>& rhs);
 
-			// begin vector
-			os << "[";
-
-			// print each element
-			for (size_t i = 0; i < rhs.m_size; i++) {
-
-				// check if T is of a primitive type
-				if (std::is_arithmetic<T>::value) {
-					// print element
-					os << rhs.m_data[i];
-				} else {
-					// print element surrounded by brackets
-					os << "{ " << rhs.m_data[i] << " }";
-				}
-
-				// if there sre still elements to print, print a comma
-				if (i + 1 < rhs.m_size) {
-					os << ", ";
-				}
-			}
-
-			// end vector
-			os << "]";
-
-			// return reference to output stream
-			return os;
-		}
-		
-		// /**
-		//  * Stream insertion operator overload for std::string specialization.
-		// */
-		// friend std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& rhs) {
-
-		// 	// begin vector
-		// 	os << "[";
-
-		// 	// print each string
-		// 	for (size_t i = 0; i < rhs.m_size; i++) {
-
-		// 		// print string
-		// 		os << '"' << rhs.m_data[i] << '"';
-
-		// 		// if there sre still strings to print, print a comma
-		// 		if (i + 1 < rhs.m_size) {
-		// 			os << ", ";
-		// 		}
-		// 	}
-
-		// 	// end vector
-		// 	os << "]";
-
-		// 	// return reference to output stream
-		// 	return os;
-		// }
+		template<size_t _N>
+		friend std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, _N>& rhs);
 	
 	}; // class vector
 
@@ -770,6 +716,70 @@ inline size_t nostl::vector<T, N>::expand_to_fit() const {
 	// figure out factor based on vector's current size and return new capacity
 	float factor = this->m_capacity < 1000 ? 1.5f : 1.1f;
 	return (size_t)(std::ceil(this->m_capacity * factor));
+}
+
+/********** Free Function Implementations **********/
+
+/**
+ * Default stream insertion operator overload for any specialization.
+*/
+template<typename T, size_t N>
+std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
+
+	// begin vector
+	os << "[";
+
+	// insert each element
+	for (size_t i = 0; i < N; i++) {
+
+		// check if T is of a primitive type
+		if (std::is_arithmetic<T>::value) {
+			// insert element
+			os << rhs[i];
+		} else {
+			// insert element surrounded by brackets
+			os << "{ " << rhs[i] << " }";
+		}
+
+		// if there are still elements to insert, insert a comma
+		if (i + 1 < N) {
+			os << ", ";
+		}
+	}
+
+	// end vector
+	os << "]";
+
+	// return reference to output stream
+	return os;
+}
+
+/**
+ * Stream insertion operator overload for std::string specialization.
+*/
+template<size_t N>
+std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& rhs) {
+
+	// begin vector
+	os << "[";
+
+	// insert each string
+	for (size_t i = 0; i < N; i++) {
+
+		// insert string
+		os << '"' << rhs.m_data[i] << '"';
+
+		// if there are still strings to insert, insert a comma
+		if (i + 1 < N) {
+			os << ", ";
+		}
+	}
+
+	// end vector
+	os << "]";
+
+	// return reference to output stream
+	return os;
 }
 
 #endif // NOSTL_VECTOR_H
