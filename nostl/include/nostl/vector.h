@@ -37,12 +37,10 @@ namespace nostl {
 		typedef T 				value_type; 		/** Type of values stored in the vector. */
 		typedef size_t 			size_type; 			/** Size type. */
 		typedef std::ptrdiff_t 	difference_type; 	/** Pointer difference type (for pointer arithmetics in any address space). */
-
-		typedef T* 			pointer; 		/** Pointer to value type */
-		typedef const T* 	const_pointer; 	/** Pointer to const value type. */
-
-		typedef T& 			reference; 			/** Reference to value type */
-		typedef const T& 	const_reference; 	/** Reference to const value type */
+		typedef T* 				pointer; 			/** Pointer to value type */
+		typedef const T* 		const_pointer; 		/** Pointer to const value type. */
+		typedef T& 				reference; 			/** Reference to value type */
+		typedef const T& 		const_reference; 	/** Reference to const value type */
 
 		typedef nostl::array_iterator<nostl::vector<T>> 		iterator; 		/** Normal iterator type. */
 		typedef nostl::array_iterator<nostl::vector<const T>> 	const_iterator; /** Normal const iterator type. */
@@ -96,8 +94,8 @@ namespace nostl {
 
 		bool empty() const;
 
-		const T& at(size_t idx) const;
 		T& at(size_t idx);
+		const T& at(size_t idx) const;
 
 		const T& front() const;
 		T& front();
@@ -106,10 +104,12 @@ namespace nostl {
 		T& back();
 
 		iterator begin();
+		const_iterator begin() const;
+		const_iterator cbegin() const;
+		
 		iterator end();
-
-		const_iterator cbegin();
-		const_iterator cend();
+		const_iterator end() const;
+		const_iterator cend() const;
 
 	public:
 		/********** Operator Overload Declarations **********/
@@ -132,38 +132,9 @@ namespace nostl {
 		/********** Friend Functions **********/
 
 		/**
-		 * Stream insertion operator overload for std::string specialization.
-		*/
-		template<size_t fN>
-		friend std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, fN>& rhs) {
-
-			// begin vector
-			os << "[";
-
-			// print each string
-			for (size_t i = 0; i < rhs.m_size; i++) {
-
-				// print string
-				os << '"' << rhs.m_data[i] << '"';
-
-				// if there sre still strings to print, print a comma
-				if (i + 1 < rhs.m_size) {
-					os << ", ";
-				}
-			}
-
-			// end vector
-			os << "]";
-
-			// return reference to output stream
-			return os;
-		}
-	
-		/**
 		 * Default stream insertion operator overload for any specialization.
 		*/
-		template<typename fT, size_t fN>
-		friend std::ostream& operator<<(std::ostream& os, const nostl::vector<fT, fN>& rhs) {
+		friend std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 
 			// begin vector
 			os << "[";
@@ -193,6 +164,33 @@ namespace nostl {
 			return os;
 		}
 		
+		// /**
+		//  * Stream insertion operator overload for std::string specialization.
+		// */
+		// friend std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& rhs) {
+
+		// 	// begin vector
+		// 	os << "[";
+
+		// 	// print each string
+		// 	for (size_t i = 0; i < rhs.m_size; i++) {
+
+		// 		// print string
+		// 		os << '"' << rhs.m_data[i] << '"';
+
+		// 		// if there sre still strings to print, print a comma
+		// 		if (i + 1 < rhs.m_size) {
+		// 			os << ", ";
+		// 		}
+		// 	}
+
+		// 	// end vector
+		// 	os << "]";
+
+		// 	// return reference to output stream
+		// 	return os;
+		// }
+	
 	}; // class vector
 
 } // namespace nostl
@@ -568,21 +566,21 @@ template<typename T, size_t N>
 bool nostl::vector<T, N>::empty() const { return this->m_size == 0; }
 
 /**
- * const member access function.
- * Returns a const reference to an element in the vector given its index.
-*/
-template<typename T, size_t N>
-const T& nostl::vector<T, N>::at(size_t idx) const {
-	assert(idx < this->m_size);
-	return (*this)[idx];
-}
-
-/**
  * Member access function.
  * Returns a reference to an element in the vector given its index.
 */
 template<typename T, size_t N>
 T& nostl::vector<T, N>::at(size_t idx) {
+	assert(idx < this->m_size);
+	return (*this)[idx];
+}
+
+/**
+ * const member access function.
+ * Returns a const reference to an element in the vector given its index.
+*/
+template<typename T, size_t N>
+const T& nostl::vector<T, N>::at(size_t idx) const {
 	assert(idx < this->m_size);
 	return (*this)[idx];
 }
@@ -621,6 +619,24 @@ typename nostl::vector<T, N>::iterator nostl::vector<T, N>::begin() {
 }
 
 /**
+ * Returns a const iterator that references the address of the first element of 
+ * this vector.
+*/
+template<typename T, size_t N>
+typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::begin() const {
+	return const_iterator(this->m_data); // address of first element
+}
+
+/**
+ * Returns a const iterator that references the address of the first element of 
+ * this vector.
+*/
+template<typename T, size_t N>
+typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cbegin() const {
+	return const_iterator(this->m_data); // address of first element
+}
+
+/**
  * Returns an iterator that references the address past the last element of this
  * vector.
 */
@@ -630,12 +646,12 @@ typename nostl::vector<T, N>::iterator nostl::vector<T, N>::end() {
 }
 
 /**
- * Returns a const iterator that references the address of the first element of 
+ * Returns a const iterator that references the address past the last element of
  * this vector.
 */
 template<typename T, size_t N>
-typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cbegin() {
-	return const_iterator(this->m_data); // address of first element
+typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::end() const {
+	return const_iterator(this->m_data + this->m_size); // address one step after last element
 }
 
 /**
@@ -643,7 +659,7 @@ typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cbegin() {
  * this vector.
 */
 template<typename T, size_t N>
-typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cend() {
+typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cend() const {
 	return const_iterator(this->m_data + this->m_size); // address one step after last element
 }
 
@@ -758,6 +774,7 @@ inline size_t nostl::vector<T, N>::expand_to_fit() const {
 
 #endif // NOSTL_VECTOR_H
 
+/** @todo replace for and while loops with iterator loops or range-based for loops where applicable */
 /** @todo shrink_to_fit function */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */
