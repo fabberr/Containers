@@ -48,9 +48,6 @@ namespace nostl
 	public:
 		/********** Constructors & Destructor Declarations **********/
 		
-		/** Default constructor. */
-		array() = default;
-
 		array(const_reference value = T());
 		array(const std::initializer_list<value_type>& ilist);
 
@@ -166,8 +163,10 @@ namespace nostl
 /********** Constructors & Destructor Implementations **********/
 
 /**
- * @brief Constructor.
- * Constructs an array with N copies of the given value.
+ * @brief (Default) Constructor.
+ * Constructs an array with N copies of the given value. Can act as the default 
+ * constructor as it can be called with no parameters, initializes all values to
+ * default-constructed objects of type T in that case.
  * 
  * @param value [in] Value to initialize the array with. Optional, defaults to a
  * default-constructed object of type T.
@@ -254,7 +253,7 @@ nostl::array<T, N>::array(const std::array<T, N>& other) {
 template<typename T, size_t N>
 nostl::array<T, N>::array(nostl::array<T, N>&& other) {
 
-	// iterator type aliases
+	// iterator type alias
 	using itr_t = nostl::array<T, N>::iterator;
 
 	// Check if T is a primitive and move data accordingly.
@@ -433,11 +432,30 @@ T& nostl::array<T, N>::operator[](size_type idx) {
 
 /**
  * Copy assignment operator overload.
- * Copies the data from other into this instance. Old values will be lsot.
+ * Copies the data from other into this instance. Old values will be destroyed.
 */
 template<typename T, size_t N>
 nostl::array<T, N>& nostl::array<T, N>::operator=(const nostl::array<T, N>& other) {
+	std::cout << "copy-assigning into instance\n";
 
+	// iterator type aliases
+	using itr_t = nostl::array<T, N>::iterator;
+	using citr_t = nostl::array<T, N>::const_iterator;
+
+	// Check if T is a primitive and copy data accordingly.
+	// For a comprehensible table of what is considered an arithmetic type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
+	if (std::is_arithmetic<T>::value) {
+		// T is of an arithmetic type, use std::memcpy
+		std::memcpy(this->m_data, other.m_data, N * sizeof (T));
+	} else {
+		// T is not of an arithmetic type, call copy constructor for each element
+		itr_t i = this->begin();
+		citr_t j = other.begin();
+		while (i != this->end()) {
+			*i++ = *j++;
+		}
+	}
 
 	return *this;
 }
@@ -450,15 +468,38 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(const nostl::array<T, N>& othe
 */
 template<typename T, size_t N>
 nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
-	// std::cout << "move-assigning into instance\n";
-	
-	// transfer ownership of other array's members into this instance
-	this->m_data = other.m_data;
+	std::cout << "move-assigning into instance\n";
+
+	// iterator type alias
+	using itr_t = nostl::array<T, N>::iterator;
+
+	// Check if T is a primitive and move data accordingly.
+	// For a comprehensible table of what is considered an arithmetic type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
+	if (std::is_arithmetic<T>::value) {
+		// T is of an arithmetic type, use std::memmove
+		size_t count = N * sizeof (T);
+		std::memmove(this->m_data, other.m_data, count);
+
+		// leave other array in an "empty" state
+		std::memset(other.m_data, 0, count);
+	} else {
+		// T is not of an arithmetic type, call move constructor for each element
+		itr_t i = this->begin(), j = other.begin();
+		while (i != this->end()) {
+			*i++ = std::move(*j++);
+		}
+
+		// leave other array in an "empty" state
+		for (auto& e : other) {
+			e.~T();
+		}
+	}
 
 	return *this;
 }
 
 #endif // NOSTL_ARRAY
 
-/** @todo fix copy assignment operator */
-/** @todo fix move assignment operator */
+/** @todo fill member function */
+/** @todo swap member function */

@@ -44,9 +44,10 @@ int main() {
 
 	using arr_t = nostl::array<int, 10>;
 	using carr_t = const arr_t;
-	
+
 	arr_t a1{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	arr_t a2(std::move(a1));
+	arr_t a2;
+	a2 = std::move(a1);
 
 	std::cout << "a1: " << a1 << std::endl;
 	std::cout << "a2: " << a2 << std::endl;
