@@ -44,11 +44,11 @@ int main() {
 
 	using arr_t = nostl::vector<int, 10>;
 	using carr_t = const nostl::vector<int, 10>;
-	carr_t a1{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	arr_t a1{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
 	using itr_t = arr_t::iterator;
 	using citr_t = arr_t::const_iterator;
-	for (citr_t it = a1.begin(); it != a1.end(); it++) {
+	for (itr_t it = a1.begin(); it != a1.end(); it++) {
 		std::cout << (*it) << ' ';
 	}
 	std::cout << std::endl;
