@@ -75,6 +75,7 @@ namespace nostl {
 
 		void clear();
 		void resize(size_t new_capacity);
+		void shrink_to_fit();
 
 		vector& push_back(const T& elem);
 		vector& push_back(T&& elem);
@@ -128,15 +129,6 @@ namespace nostl {
 
 		inline size_t expand_to_fit() const;
 
-	public:
-		/********** Free Function Declarations **********/
-
-		template<typename _T, size_t _N>
-		friend std::ostream& operator<<(std::ostream& os, const nostl::vector<_T, _N>& rhs);
-
-		template<size_t _N>
-		friend std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, _N>& rhs);
-	
 	}; // class vector
 
 } // namespace nostl
@@ -356,7 +348,7 @@ void nostl::vector<T, N>::resize(size_t new_capacity) {
 	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
 	if (std::is_arithmetic<T>::value) {
 		// T is of an arithmetic type, use std::memcpy
-		if (this->data) {
+		if (this->m_data) {
 			std::memcpy(new_block, this->m_data, sizeof (T) * this->m_size);
 		}
 	} else {
@@ -381,6 +373,14 @@ void nostl::vector<T, N>::resize(size_t new_capacity) {
 
 	this->m_data = new_block; 			// assign m_data pointer to new block
 	this->m_capacity = new_capacity; 	// set new capacity
+}
+
+/**
+ * Reduces the vector's maximum capacity to be equal to vector's length.
+*/
+template<typename T, size_t N>
+void nostl::vector<T, N>::shrink_to_fit() {
+	this->resize(this->m_size);
 }
 
 /**
@@ -720,7 +720,7 @@ inline size_t nostl::vector<T, N>::expand_to_fit() const {
 	return (size_t)(std::ceil(this->m_capacity * factor));
 }
 
-/********** Free Function Implementations **********/
+/********** Free Functions **********/
 
 /**
  * Default stream insertion operator overload for any specialization.
@@ -732,7 +732,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 	os << "[";
 
 	// insert each element
-	for (size_t i = 0; i < N; i++) {
+	for (size_t i = 0; i < rhs.len(); i++) {
 
 		// check if T is of a primitive type
 		if (std::is_arithmetic<T>::value) {
@@ -744,7 +744,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 		}
 
 		// if there are still elements to insert, insert a comma
-		if (i + 1 < N) {
+		if (i + 1 < rhs.len()) {
 			os << ", ";
 		}
 	}
@@ -766,13 +766,13 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 	os << "[";
 
 	// insert each string
-	for (size_t i = 0; i < N; i++) {
+	for (size_t i = 0; i < rhs.len(); i++) {
 
 		// insert string
-		os << '"' << rhs.m_data[i] << '"';
+		os << '"' << rhs[i] << '"';
 
 		// if there are still strings to insert, insert a comma
-		if (i + 1 < N) {
+		if (i + 1 < rhs.len()) {
 			os << ", ";
 		}
 	}
@@ -786,9 +786,6 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 
 #endif // NOSTL_VECTOR_H
 
-/** @todo DO NOT std::memcpy with null pointers => undefined behavior */
-/** @todo replace for and while loops with iterator loops or range-based for loops where applicable */
-/** @todo shrink_to_fit function */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */
 /** @todo write doxygen-style documentation for */

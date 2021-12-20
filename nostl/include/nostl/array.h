@@ -91,15 +91,6 @@ namespace nostl
 
 		array<T, N>& operator=(const array<T, N>& other);
 		array<T, N>& operator=(array<T, N>&& other);
-
-	public:
-		/********** Free Function Declarations **********/
-
-		template<typename _T, size_t _N>
-		friend std::ostream& operator<<(std::ostream& os, const nostl::array<_T, _N>& rhs);
-
-		template<size_t _N>
-		friend std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, _N>& rhs);
 	
 	}; // class array
 
@@ -454,7 +445,7 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
 	return *this;
 }
 
-/********** Free Function Implementations **********/
+/********** Free Functions **********/
 
 /**
  * Default stream insertion operator overload for any specialization.
@@ -503,7 +494,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 	for (size_t i = 0; i < N; i++) {
 
 		// insert string
-		os << '"' << rhs.m_data[i] << '"';
+		os << '"' << rhs[i] << '"';
 
 		// if there are still strings to insert, insert a comma
 		if (i + 1 < N) {
@@ -520,5 +511,6 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 
 #endif // NOSTL_ARRAY
 
+/** @todo fill rest of array with default values in initializer list constructor */
 /** @todo fill member function */
 /** @todo swap member function */
