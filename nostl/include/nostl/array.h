@@ -256,7 +256,6 @@ nostl::array<T, N>::array(nostl::array<T, N>&& other) {
 
 	// iterator type aliases
 	using itr_t = nostl::array<T, N>::iterator;
-	using citr_t = nostl::array<T, N>::const_iterator;
 
 	// Check if T is a primitive and move data accordingly.
 	// For a comprehensible table of what is considered an arithmetic type, see: 
@@ -270,8 +269,7 @@ nostl::array<T, N>::array(nostl::array<T, N>&& other) {
 		std::memset(other.m_data, 0, count);
 	} else {
 		// T is not of an arithmetic type, call move constructor for each element
-		itr_t i = this->begin();
-		citr_t j = other.cbegin();
+		itr_t i = this->begin(), j = other.begin();
 		while (i != this->end()) {
 			*i++ = std::move(*j++);
 		}
