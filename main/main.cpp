@@ -43,7 +43,8 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 int main() {
 
 	using arr_t = nostl::array<int, 10>;
-	using carr_t = const nostl::array<int, 10>;
+	using carr_t = const arr_t;
+	
 	arr_t a1{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	arr_t a2(std::move(a1));
 
