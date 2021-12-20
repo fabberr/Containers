@@ -356,7 +356,9 @@ void nostl::vector<T, N>::resize(size_t new_capacity) {
 	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
 	if (std::is_arithmetic<T>::value) {
 		// T is of an arithmetic type, use std::memcpy
-		std::memcpy(new_block, this->m_data, sizeof (T) * this->m_size);
+		if (this->data) {
+			std::memcpy(new_block, this->m_data, sizeof (T) * this->m_size);
+		}
 	} else {
 		// T is not of an arithmetic type, call move constructor for each element
 		for (size_t i = 0; i < this->m_size; i++) {
