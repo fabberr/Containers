@@ -153,7 +153,9 @@ nostl::array<T, N>::array(const nostl::array<T, N>& other) {
 	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
 	if (std::is_arithmetic<T>::value) {
 		// T is of an arithmetic type, use std::memcpy
-		std::memcpy(this->m_data, other.m_data, N * sizeof (T));
+		if (this->m_data && other.m_data) {
+			std::memcpy(this->m_data, other.m_data, N * sizeof (T));
+		}
 	} else {
 		// T is not of an arithmetic type, call copy constructor for each element
 		itr_t i = this->begin();
@@ -179,7 +181,9 @@ nostl::array<T, N>::array(const std::array<T, N>& other) {
 	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
 	if (std::is_arithmetic<T>::value) {
 		// T is of an arithmetic type, use std::memcpy
-		std::memcpy(this->m_data, other.data(), N * sizeof (T));
+		if (this->m_data && other.data()) {
+			std::memcpy(this->m_data, other.data(), N * sizeof (T));
+		}
 	} else {
 		// T is not of an arithmetic type, call copy constructor for each element
 		itr_t i = this->begin();
@@ -207,7 +211,9 @@ nostl::array<T, N>::array(nostl::array<T, N>&& other) {
 	if (std::is_arithmetic<T>::value) {
 		// T is of an arithmetic type, use std::memmove
 		size_t count = N * sizeof (T);
-		std::memmove(this->m_data, other.m_data, count);
+		if (this->m_data && other.m_data) {
+			std::memmove(this->m_data, other.m_data, count);
+		}
 
 		// leave other array in an "empty" state
 		std::memset(other.m_data, 0, count);
@@ -392,7 +398,9 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(const nostl::array<T, N>& othe
 	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
 	if (std::is_arithmetic<T>::value) {
 		// T is of an arithmetic type, use std::memcpy
-		std::memcpy(this->m_data, other.m_data, N * sizeof (T));
+		if (this->m_data && other.m_data) {
+			std::memcpy(this->m_data, other.m_data, N * sizeof (T));
+		}
 	} else {
 		// T is not of an arithmetic type, call copy constructor for each element
 		itr_t i = this->begin();
@@ -424,7 +432,9 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
 	if (std::is_arithmetic<T>::value) {
 		// T is of an arithmetic type, use std::memmove
 		size_t count = N * sizeof (T);
-		std::memmove(this->m_data, other.m_data, count);
+		if (this->m_data && other.m_data) {
+			std::memmove(this->m_data, other.m_data, count);
+		}
 
 		// leave other array in an "empty" state
 		std::memset(other.m_data, 0, count);
