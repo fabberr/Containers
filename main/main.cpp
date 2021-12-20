@@ -42,16 +42,13 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	using arr_t = nostl::vector<int, 10>;
-	using carr_t = const nostl::vector<int, 10>;
+	using arr_t = nostl::array<int, 10>;
+	using carr_t = const nostl::array<int, 10>;
 	arr_t a1{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	arr_t a2(std::move(a1));
 
-	using itr_t = arr_t::iterator;
-	using citr_t = arr_t::const_iterator;
-	for (itr_t it = a1.begin(); it != a1.end(); it++) {
-		std::cout << (*it) << ' ';
-	}
-	std::cout << std::endl;
+	std::cout << "a1: " << a1 << std::endl;
+	std::cout << "a2: " << a2 << std::endl;
 
 	return 0;
 }

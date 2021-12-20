@@ -48,23 +48,18 @@ namespace nostl
 	public:
 		/********** Constructors & Destructor Declarations **********/
 		
-		// /** Default default constructor. */
-		// array() = default;
-
-		// /** Default copy constructor. */
-		// array(const array& other);
-
-		// /** Default move constructor. */
-		// array(array&& other);
-
-		/** Default destructor. */
-		virtual ~array() = default;
+		/** Default constructor. */
+		array() = default;
 
 		array(const_reference value = T());
 		array(const std::initializer_list<value_type>& ilist);
 
+		array(const array& other);
 		array(const std::array<value_type, N>& other);
-	
+		array(array&& other);
+
+		/** Default destructor. */
+		virtual ~array() = default;
 	public:
 		/********** Public Member Function Declarations **********/
 
@@ -170,7 +165,6 @@ namespace nostl
 
 /********** Constructors & Destructor Implementations **********/
 
-
 /**
  * @brief Constructor.
  * Constructs an array with N copies of the given value.
@@ -201,20 +195,35 @@ nostl::array<T, N>::array(const std::initializer_list<T>& ilist) {
 }
 
 /**
- * Copy constructor (from std::array)
+ * Copy constructor.
+*/
+template<typename T, size_t N>
+nostl::array<T, N>::array(const nostl::array<T, N>& other) {
+	std::memcpy(this->m_data, other.m_data, N * sizeof (T));
+}
+
+/**
+ * Copy (from std::array) constructor.
 */
 template<typename T, size_t N>
 nostl::array<T, N>::array(const std::array<T, N>& other) {
+	std::memcpy(this->m_data, other.data(), N * sizeof (T));
+}
 
-	using itr_t = typename nostl::array<T, N>::iterator;
-	using stditr_t = typename std::array<T, N>::const_iterator;
+/**
+ * Move constructor.
+ * Transfers the ownership of the other array's members into this instance. The 
+ * other array will be left in an invalid "empty" state.
+*/
+template<typename T, size_t N>
+nostl::array<T, N>::array(nostl::array<T, N>&& other) {
 
-	// copy elements from other array into this instance
-	itr_t i = this->begin();
-	stditr_t j = other.begin();
-	while (i != this->end()) {
-		*i++ = *j++;
-	}
+	// transfer ownership of other array's members into this instance
+	constexpr size_t count = N * sizeof (T);
+	std::memmove(this->m_data, other.m_data, count);
+
+	// leave other array in an "empty" state
+	std::memset(other.m_data, 0, count);
 }
 
 /********** Public Member Function Implementations **********/
@@ -403,6 +412,5 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
 
 #endif // NOSTL_ARRAY
 
-/** @todo implement copy and move constructors using memcpy and memmove */
 /** @todo fix copy assignment operator */
 /** @todo fix move assignment operator */

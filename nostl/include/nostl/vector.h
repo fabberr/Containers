@@ -774,6 +774,7 @@ inline size_t nostl::vector<T, N>::expand_to_fit() const {
 
 #endif // NOSTL_VECTOR_H
 
+/** @todo DO NOT std::memcpy with null pointers => undefined behavior */
 /** @todo replace for and while loops with iterator loops or range-based for loops where applicable */
 /** @todo shrink_to_fit function */
 /** @todo insert at arbitrary position function */
