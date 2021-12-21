@@ -10,7 +10,7 @@
 
 // C library
 #include <cstddef> // size_t. ptrdiff_t
-#include <cstring> // std::memmove, std::memcpy
+#include <cstring> // std::memmove, std::memcpy, std::memset
 
 // libnostl
 #include <nostl/arr_iterators.h>
@@ -59,6 +59,8 @@ namespace nostl
 		virtual ~array() = default;
 	public:
 		/********** Public Member Function Declarations **********/
+
+		void fill(const_reference value = T());
 
 		inline constexpr size_type len() const noexcept;
 		inline constexpr bool empty() const noexcept;
@@ -109,11 +111,7 @@ namespace nostl
 */
 template<typename T, size_t N>
 nostl::array<T, N>::array(const T& value) {
-
-	// copy N instances of value into this array
-	for (auto& e : *this) {
-		e = value;
-	}
+	this->fill(value);
 }
 
 /**
@@ -233,6 +231,21 @@ nostl::array<T, N>::array(nostl::array<T, N>&& other) {
 }
 
 /********** Public Member Function Implementations **********/
+
+/**
+ * Fills array with desired value.
+ * 
+ * @param value [in] Value to fill the array with. Optional, defaults to a 
+ *        default-constructed object of type T.
+*/
+template<typename T, size_t N>
+void nostl::array<T, N>::fill(const T& value) {
+	
+	// copy N instances of value into this array
+	for (auto& e : *this) {
+		e = value;
+	}
+}
 
 /**
  * Returns the number of elements that can be stored in the array.
@@ -521,5 +534,4 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 
 #endif // NOSTL_ARRAY
 
-/** @todo fill member function */
 /** @todo swap member function */

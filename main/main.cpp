@@ -42,28 +42,27 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	// using arr_t = nostl::array<int, 100>;
-	using arr_t = nostl::array<std::string, 100>;
-	// using vec_t = nostl::vector<int, 100>;
-	using vec_t = nostl::vector<std::string, 100>;
+	using arr_t = nostl::array<int, 10>;
+	// using arr_t = nostl::array<std::string, 10>;
+	using vec_t = nostl::vector<int, 100>;
+	// using vec_t = nostl::vector<std::string, 100>;
 
-	// vec_t arr { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	vec_t arr {
-		"one", 
-		"two", 
-		"three", 
-		"four", 
-		"five", 
-		"six", 
-		"seven", 
-		"eight", 
-		"nine", 
-		"ten"
-	};
-	// std::cout << "arr: " << arr << std::endl;
-	print_vec_stats(arr);
-	arr.shrink_to_fit();
-	print_vec_stats(arr);
+	arr_t arr(10);
+	// vec_t arr {
+	// 	"one", 
+	// 	"two", 
+	// 	"three", 
+	// 	"four", 
+	// 	"five", 
+	// 	"six", 
+	// 	"seven", 
+	// 	"eight", 
+	// 	"nine", 
+	// 	"ten"
+	// };
+	std::cout << "arr: " << arr << std::endl;
+	arr.fill(312312);
+	std::cout << "arr: " << arr << std::endl;
 
 	return 0;
 }
