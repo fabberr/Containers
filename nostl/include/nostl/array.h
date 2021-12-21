@@ -122,10 +122,20 @@ nostl::array<T, N>::array(const T& value) {
 template<typename T, size_t N>
 nostl::array<T, N>::array(const std::initializer_list<T>& ilist) {
 
+	// iterator type aliases
+	using itr_t = nostl::array<T, N>::iterator;
+	using litr_t = typename std::initializer_list<T>::iterator;
+
 	// move elements from initializer list into this instance
-	size_t i = 0;
-	for (const auto& value : ilist) {
-		this->m_data[i++] = std::move(value);
+	itr_t it = this->begin();
+	litr_t l = ilist.begin();
+	while (l != ilist.end()) {
+		*it++ = std::move(*l++);
+	}
+
+	// fill rest of array with default values
+	while (it != this->end()) {
+		*it++ = T();
 	}
 }
 
