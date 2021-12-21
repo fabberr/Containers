@@ -43,7 +43,7 @@ namespace nostl {
 		typedef const T& 		const_reference; 	/** Reference to const value type */
 
 		typedef nostl::array_iterator<nostl::vector<T>> 		iterator; 		/** Normal iterator type. */
-		typedef nostl::array_iterator<nostl::vector<const T>> 	const_iterator; /** Normal const iterator type. */
+		typedef nostl::array_iterator<const nostl::vector<T>> 	const_iterator; /** Normal const iterator type. */
 
 		// typedef nostl::reverse_array_iterator<iterator> 		reverse_iterator; 		/** Reverse iterator type. */
 		// typedef nostl::reverse_array_iterator<const_iterator> 	const_reverse_iterator; /** Reverse const iterator type. */

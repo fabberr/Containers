@@ -38,7 +38,7 @@ namespace nostl
 		typedef const T& 		const_reference; 	/** Reference to const value type */
 
 		typedef nostl::array_iterator<nostl::array<T, N>> 		iterator; 		/** Normal iterator type. */
-		typedef nostl::array_iterator<nostl::array<const T, N>> const_iterator; /** Normal const iterator type. */
+		typedef nostl::array_iterator<const nostl::array<T, N>> const_iterator; /** Normal const iterator type. */
 
 	private:
 		/********** Private Members **********/
@@ -521,6 +521,5 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 
 #endif // NOSTL_ARRAY
 
-/** @todo fill rest of array with default values in initializer list constructor */
 /** @todo fill member function */
 /** @todo swap member function */
