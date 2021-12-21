@@ -139,8 +139,6 @@ vector(T, U...) -> vector<T, 1 + sizeof...(U)>;
 template<typename T, typename... U>
 vector(const T, U...) -> vector<T, 1 + sizeof...(U)>;
 
-} // namespace nostl
-
 /********** Constructors & Destructor Implementations **********/
 
 /**
@@ -792,8 +790,9 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 	return os;
 }
 
+} // namespace nostl
+
 #endif // NOSTL_VECTOR_H
 
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */
-/** @todo write doxygen-style documentation for */

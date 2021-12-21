@@ -57,6 +57,7 @@ namespace nostl
 
 		/** Default destructor. */
 		virtual ~array() = default;
+
 	public:
 		/********** Public Member Function Declarations **********/
 
@@ -103,8 +104,6 @@ array(T, U...) -> array<T, 1 + sizeof...(U)>;
 
 template<typename T, typename... U>
 array(const T, U...) -> array<T, 1 + sizeof...(U)>;
-
-} // namespace nostl
 
 /********** Constructors & Destructor Implementations **********/
 
@@ -540,6 +539,8 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 	// return reference to output stream
 	return os;
 }
+
+} // namespace nostl
 
 #endif // NOSTL_ARRAY
 
