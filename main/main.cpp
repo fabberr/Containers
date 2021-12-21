@@ -40,29 +40,29 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 /********** Main Entry Point **********/
 
+template<typename T, size_t N>
+std::ostream& operator<<(std::ostream& os, const std::array<T, N>& rhs) {
+	os << '[';
+	typename std::array<T, N>::const_iterator it = rhs.begin();
+	while (it != rhs.end()) {
+		os << *it;
+		if (++it != rhs.end()) {
+			os << ", ";
+		}
+	}
+	os << ']';
+	return os;
+}
+
 int main() {
 
 	using arr_t = nostl::array<int, 10>;
-	// using arr_t = nostl::array<std::string, 10>;
-	using vec_t = nostl::vector<int, 100>;
-	// using vec_t = nostl::vector<std::string, 100>;
+	arr_t arr { 10, 20, 30, 40, 50 };
 
-	arr_t arr(10);
-	// vec_t arr {
-	// 	"one", 
-	// 	"two", 
-	// 	"three", 
-	// 	"four", 
-	// 	"five", 
-	// 	"six", 
-	// 	"seven", 
-	// 	"eight", 
-	// 	"nine", 
-	// 	"ten"
-	// };
-	std::cout << "arr: " << arr << std::endl;
-	arr.fill(312312);
-	std::cout << "arr: " << arr << std::endl;
+	const nostl::array deduced { 1, 2, 3, 4, 5 };
 
+	std::cout << "arr: " << arr << std::endl;
+	std::cout << "deduced: " << deduced << std::endl;
+	
 	return 0;
 }

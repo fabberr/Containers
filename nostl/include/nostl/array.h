@@ -96,6 +96,14 @@ namespace nostl
 	
 	}; // class array
 
+/********** Class Template Argument Deduction Guides **********/
+
+template<typename T, typename... U>
+array(T, U...) -> array<T, 1 + sizeof...(U)>;
+
+template<typename T, typename... U>
+array(const T, U...) -> array<T, 1 + sizeof...(U)>;
+
 } // namespace nostl
 
 /********** Constructors & Destructor Implementations **********/
@@ -111,6 +119,7 @@ namespace nostl
 */
 template<typename T, size_t N>
 nostl::array<T, N>::array(const T& value) {
+	// fill array with value
 	this->fill(value);
 }
 

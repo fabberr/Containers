@@ -131,6 +131,14 @@ namespace nostl {
 
 	}; // class vector
 
+/********** Class Template Argument Deduction Guides **********/
+
+template<typename T, typename... U>
+vector(T, U...) -> vector<T, 1 + sizeof...(U)>;
+
+template<typename T, typename... U>
+vector(const T, U...) -> vector<T, 1 + sizeof...(U)>;
+
 } // namespace nostl
 
 /********** Constructors & Destructor Implementations **********/
