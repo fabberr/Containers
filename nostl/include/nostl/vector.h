@@ -28,6 +28,9 @@ namespace nostl {
 	/**
 	 * Dynamic random-access container using an underlying C-style heap-allocated 
 	 * array for storing data contiguously in memory.
+	 * 
+	 * @tparam T Type of values stored in the vector.
+	 * @tparam N Initial capacity of vector. Optional, defaults to 2.
 	*/
 	template<typename T, size_t N = 2>
 	class vector {
@@ -36,7 +39,7 @@ namespace nostl {
 
 		typedef T 				value_type; 		/** Type of values stored in the vector. */
 		typedef size_t 			size_type; 			/** Size type. */
-		typedef std::ptrdiff_t 	difference_type; 	/** Pointer difference type (for pointer arithmetics in any address space). */
+		typedef std::ptrdiff_t 	difference_type; 	/** Pointer difference type. */
 		typedef T* 				pointer; 			/** Pointer to value type */
 		typedef const T* 		const_pointer; 		/** Pointer to const value type. */
 		typedef T& 				reference; 			/** Reference to value type */
@@ -139,7 +142,7 @@ vector(T, U...) -> vector<T, 1 + sizeof...(U)>;
 template<typename T, typename... U>
 vector(const T, U...) -> vector<T, 1 + sizeof...(U)>;
 
-/********** Constructors & Destructor Implementations **********/
+/********** Constructors & Destructor Definitions **********/
 
 /**
  * Default constructor.
@@ -313,7 +316,7 @@ nostl::vector<T, N>::~vector() {
 	this->m_size = this->m_capacity = 0;
 }
 
-/********** Public Member Function Implementations **********/
+/********** Public Member Function Definitions **********/
 
 /**
  * Removes all elements from the vector, destroying them. Capacity is unchanged.
@@ -617,7 +620,7 @@ typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cend() const {
 	return const_iterator(this->m_data + this->m_size); // address one step after last element
 }
 
-/********** Operator Overload Implementations **********/
+/********** Operator Overload Definitions **********/
 
 /**
  * Subscript operator overload (const).
@@ -708,7 +711,7 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(nostl::vector<T, N>&& other)
 	return *this;
 }
 
-/********** Private Member Function Implementations **********/
+/********** Private Member Function Definitions **********/
 
 /**
  * Helper function for vector::append. Called if the vector is at full capcity 
@@ -794,5 +797,6 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 
 #endif // NOSTL_VECTOR_H
 
+/** @todo revert to std::is_fundamental instead of using std::is_arithmetic */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */

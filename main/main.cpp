@@ -57,12 +57,14 @@ std::ostream& operator<<(std::ostream& os, const std::array<T, N>& rhs) {
 int main() {
 
 	using arr_t = nostl::array<int, 10>;
-	arr_t arr { 10, 20, 30, 40, 50 };
+	arr_t arr{ 10, 20, 30, 40, 50 };
 
-	const nostl::array deduced { 1, 2, 3, 4, 5 };
+	const nostl::array deduced{ 1, 2, 3, 4, 5 };
 
 	std::cout << "arr: " << arr << std::endl;
 	std::cout << "deduced: " << deduced << std::endl;
 	
 	return 0;
 }
+
+/** @todo C++20 modules maybe */

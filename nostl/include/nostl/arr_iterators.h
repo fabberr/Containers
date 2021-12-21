@@ -21,7 +21,7 @@ namespace nostl {
 		/********** Member Types **********/
 		
 		typedef typename _iterable::value_type 		value_type; 		/** Type of values stored in the container. */
-		typedef typename _iterable::difference_type difference_type; 	/** Pointer difference type (for pointer arithmetics in any address space). */
+		typedef typename _iterable::difference_type difference_type; 	/** Pointer difference type. */
 		typedef typename _iterable::pointer 		pointer; 			/** Pointer to value type. */
 		typedef typename _iterable::reference		reference; 			/** Reference to value type. */
 		

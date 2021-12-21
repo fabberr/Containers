@@ -31,7 +31,7 @@ namespace nostl
 
 		typedef T 				value_type; 		/** Type of values stored in the array. */
 		typedef size_t 			size_type; 			/** Size type. */
-		typedef std::ptrdiff_t 	difference_type; 	/** Pointer difference type (for pointer arithmetics in any address space). */
+		typedef std::ptrdiff_t 	difference_type; 	/** Pointer difference type. */
 		typedef T* 				pointer; 			/** Pointer to value type */
 		typedef const T* 		const_pointer; 		/** Pointer to const value type. */
 		typedef T& 				reference; 			/** Reference to value type */
@@ -105,7 +105,7 @@ array(T, U...) -> array<T, 1 + sizeof...(U)>;
 template<typename T, typename... U>
 array(const T, U...) -> array<T, 1 + sizeof...(U)>;
 
-/********** Constructors & Destructor Implementations **********/
+/********** Constructors & Destructor Definitions **********/
 
 /**
  * @brief (Default) Constructor.
@@ -238,7 +238,7 @@ nostl::array<T, N>::array(nostl::array<T, N>&& other) {
 	}
 }
 
-/********** Public Member Function Implementations **********/
+/********** Public Member Function Definitions **********/
 
 /**
  * Fills array with desired value.
@@ -381,7 +381,7 @@ typename nostl::array<T, N>::const_iterator nostl::array<T, N>::cend() {
 	return const_iterator(this->m_data + N);
 }
 
-/********** Operator Overload Implementations **********/
+/********** Operator Overload Definitions **********/
 
 /**
  * Subscript operator overload (const).
@@ -545,3 +545,4 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 #endif // NOSTL_ARRAY
 
 /** @todo swap member function */
+/** @todo refactor: either remove references to member types or use them everywher */
