@@ -714,7 +714,7 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(nostl::vector<T, N>&& other)
 /********** Private Member Function Definitions **********/
 
 /**
- * Helper function for vector::append. Called if the vector is at full capcity 
+ * Helper function for vector::append. Called if the vector is at full capacity 
  * when trying to append a new element.
  * Returns an integral value to be set as the vector's new capacity.
  * If the vector is large (defined as having a current allocated capacity enough
