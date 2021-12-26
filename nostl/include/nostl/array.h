@@ -34,10 +34,11 @@ namespace nostl
 		typedef T 				value_type; 		/** Type of values stored in the array. */
 		typedef size_t 			size_type; 			/** Size type. */
 		typedef std::ptrdiff_t 	difference_type; 	/** Pointer difference type. */
-		typedef T* 				pointer; 			/** Pointer to value type */
-		typedef const T* 		const_pointer; 		/** Pointer to const value type. */
-		typedef T& 				reference; 			/** Reference to value type */
-		typedef const T& 		const_reference; 	/** Reference to const value type */
+
+		typedef T* 			pointer; 			/** Pointer to value type */
+		typedef const T* 	const_pointer; 		/** Pointer to const value type. */
+		typedef T& 			reference; 			/** Reference to value type */
+		typedef const T& 	const_reference; 	/** Reference to const value type */
 
 		typedef nostl::array_iterator<nostl::array<T, N>> 		iterator; 		/** Normal iterator type. */
 		typedef nostl::array_iterator<const nostl::array<T, N>> const_iterator; /** Normal const iterator type. */

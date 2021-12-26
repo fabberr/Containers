@@ -44,9 +44,13 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	nostl::vector coll{ 10, 20, 30, 40, 50 };
-	coll.resize(100);
-	print_vec_stats(coll);
+	nostl::vector<int> vec{ 1, 2 };
+	// std::cout << std::hex << static_cast<int>(vec.toggle_restrictive()) << std::dec << std::endl;
+	
+	for (size_t i = 3; i < 10; ++i) {
+		vec += i;
+		print_vec_stats(vec);
+	}
 
 	return 0;
 }

@@ -27,13 +27,21 @@
 namespace nostl {
 
 	/**
-	 * Memory usage policy flags.
+	 * Capacity expansion policy flags.
 	*/
 	enum class policy_flags {
-		NORMAL 		= 0x80, /** [1000 0000] Sets the memory usage policy to its normal behavior. */
-		RESTRICTIVE = 0x40 	/** [0100 0000] Sets restrictive memory usage mode. Causes the vector to always expand by 10% of its current max. capacity regardless of its value. */
+		// two complementary states for facilitating toggling on/off
+		NORMAL 		= 0x7F, /** [0111 1111] Sets the capacity expansion policy to its normal behavior. */
+		RESTRICTIVE = 0x80 	/** [1000 0000] Sets restrictive capacity expansion mode. Causes the vector to always expand by 10% of its current max. capacity, regardless of its value. */
 	}; // enum class policy_flags
-	
+
+	/** Bitwise unary NOT operator overload for enum class policy_flags */
+	inline constexpr 
+	policy_flags 
+	operator~(
+		const policy_flags& current
+	) { return policy_flags(~static_cast<int>(current)); }
+
 	/** Bitwise AND operator overload for enum class policy_flags */
 	inline constexpr 
 	policy_flags 
@@ -81,7 +89,7 @@ namespace nostl {
 		policy_flags& lhs, 
 		const policy_flags& rhs
 	) { return lhs = lhs ^ rhs; }
-	
+
 	/**
 	 * Dynamic random-access container using an underlying C-style heap-allocated 
 	 * array for storing data contiguously in memory.
@@ -94,13 +102,15 @@ namespace nostl {
 	public:
 		/********** Member Types **********/
 
-		typedef T 				value_type; 		/** Type of values stored in the vector. */
-		typedef size_t 			size_type; 			/** Size type. */
-		typedef std::ptrdiff_t 	difference_type; 	/** Pointer difference type. */
-		typedef T* 				pointer; 			/** Pointer to value type */
-		typedef const T* 		const_pointer; 		/** Pointer to const value type. */
-		typedef T& 				reference; 			/** Reference to value type */
-		typedef const T& 		const_reference; 	/** Reference to const value type */
+		typedef T 					value_type; 		/** Type of values stored in the vector. */
+		typedef size_t 				size_type; 			/** Size type. */
+		typedef std::ptrdiff_t 		difference_type; 	/** Pointer difference type. */
+		typedef nostl::policy_flags policy; 			/** Policy flags bitmask type */
+
+		typedef T* 			pointer; 			/** Pointer to value type */
+		typedef const T* 	const_pointer; 		/** Pointer to const value type. */
+		typedef T& 			reference; 			/** Reference to value type */
+		typedef const T& 	const_reference; 	/** Reference to const value type */
 
 		typedef nostl::array_iterator<nostl::vector<T>> 		iterator; 		/** Normal iterator type. */
 		typedef nostl::array_iterator<const nostl::vector<T>> 	const_iterator; /** Normal const iterator type. */
@@ -111,9 +121,10 @@ namespace nostl {
 	private:
 		/********** Private Members **********/
 
-		T* 		m_data;		/* Heap-allocated array for storing elements. */
-		size_t 	m_size;		/* Number of elements currently on the vector. */
-		size_t 	m_capacity; /* Maximum number of elements that can be held in the vector. */
+		T* 		m_data;			/* Heap-allocated array for storing elements. */
+		size_t 	m_size;			/* Number of elements currently on the vector. */
+		size_t 	m_capacity; 	/* Maximum number of elements that can be held in the vector. */
+		policy 	m_mem_policy; 	/** Current capacity expansion behavior. */
 
 	public:
 		/********** Constructors & Destructor Declarations **********/
@@ -172,6 +183,10 @@ namespace nostl {
 		const_iterator end() const;
 		const_iterator cend() const;
 
+		policy policy_flags() const;
+		policy policy_flags(const policy& policy);
+		const policy& toggle_restrictive();
+
 	public:
 		/********** Operator Overload Declarations **********/
 
@@ -219,7 +234,8 @@ nostl::vector<T, N>::vector() :
 	// initialize members
 	m_data(nullptr), 
 	m_size(0), 
-	m_capacity(N)
+	m_capacity(N), 
+	m_mem_policy(nostl::policy_flags::NORMAL)
 {
 	// std::cout << "constructing instance\n";
 
@@ -245,7 +261,8 @@ nostl::vector<T, N>::vector(size_t count, const T& value) :
 	// initialize members
 	m_data(nullptr), 
 	m_size(0), 
-	m_capacity(N)
+	m_capacity(N), 
+	m_mem_policy(nostl::policy_flags::NORMAL)
 {
 	// std::cout << "constructing instance with " << count << " copies of " << value << '\n';
 	
@@ -270,7 +287,8 @@ nostl::vector<T, N>::vector(const std::initializer_list<T>& ilist) :
 	// initialize members
 	m_data(nullptr), 
 	m_size(0), 
-	m_capacity(N)
+	m_capacity(N), 
+	m_mem_policy(nostl::policy_flags::NORMAL)
 {
 	// std::cout << "constructing instance from initializer list\n";
 	
@@ -296,7 +314,8 @@ nostl::vector<T, N>::vector(const nostl::vector<T, N>& other) :
 	// initialize members
 	m_data(nullptr), 
 	m_size(0), 
-	m_capacity(N)
+	m_capacity(N), 
+	m_mem_policy(other.m_mem_policy)
 {
 	// std::cout << "copy-constructing instance\n";
 
@@ -325,7 +344,8 @@ nostl::vector<T, N>::vector(const std::vector<T>& other) :
 	// initialize members
 	m_data(nullptr), 
 	m_size(0), 
-	m_capacity(N)
+	m_capacity(N), 
+	m_mem_policy(nostl::policy_flags::NORMAL)
 {
 	// std::cout << "copy-constructing instance (from std::vector)\n";
 
@@ -356,7 +376,8 @@ nostl::vector<T, N>::vector(nostl::vector<T, N>&& other) :
 	// initialize members by transfering ownership of other vector's members into this instance
 	m_data(other.m_data), 
 	m_size(other.m_size), 
-	m_capacity(other.m_capacity)
+	m_capacity(other.m_capacity), 
+	m_mem_policy(other.m_mem_policy)
 {
 	// std::cout << "move-constructing instance\n";
 
@@ -687,6 +708,36 @@ typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cend() const {
 	return const_iterator(this->m_data + this->m_size); // address one step after last element
 }
 
+/**
+ * Returns the current capacity expansion policy.
+*/
+template<typename T, size_t N>
+nostl::policy_flags nostl::vector<T, N>::policy_flags() const {
+	return this->m_mem_policy;
+}
+
+/**
+ * Sets the capacity expansion policy and returns the old value.
+*/
+template<typename T, size_t N>
+nostl::policy_flags nostl::vector<T, N>::policy_flags(const nostl::policy_flags& policy) {
+	nostl::policy_flags old = this->m_mem_policy;
+	this->m_mem_policy = policy;
+	return old;
+}
+
+/**
+ * Toggles the restrictive capacity expansion behavior on and off and returns 
+ * its current value.
+ * When restrictive capacity expansion mode is on, the vector will always expand
+ * by 10% of its current max. capacity, regardless of its value.
+*/
+template<typename T, size_t N>
+const nostl::policy_flags& nostl::vector<T, N>::toggle_restrictive() {
+	this->m_mem_policy = ~this->m_mem_policy;
+	return this->m_mem_policy;
+}
+
 /********** Operator Overload Definitions **********/
 
 /**
@@ -747,7 +798,8 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(const nostl::vector<T, N>& o
 		// called.
 		new(&this->m_data[i]) T(other.m_data[i]);
 	}
-	this->m_size = other.m_size; // set new size
+	this->m_size = other.m_size; 				// set new size
+	this->m_mem_policy = other.m_mem_policy; 	// set new capacity expansion policy
 
 	return *this;
 }
@@ -770,10 +822,12 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(nostl::vector<T, N>&& other)
 	this->m_data = other.m_data;
 	this->m_size = other.m_size;
 	this->m_capacity = other.m_capacity;
+	this->m_mem_policy = other.m_mem_policy;
 
 	// leave other vector in an "empty" state
 	other.m_data = nullptr;
 	other.m_size = other.m_capacity = 0;
+	other.m_mem_policy = nostl::policy_flags::NORMAL;
 
 	return *this;
 }
@@ -782,18 +836,29 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(nostl::vector<T, N>&& other)
 
 /**
  * Helper function for vector::append. Called if the vector is at full capacity 
- * when trying to append a new element.
- * Returns an integral value to be set as the vector's new capacity.
+ * when trying to append a new element. Returns an integral value to be set as 
+ * the vector's new capacity.
+ * 
  * If the vector is large (defined as having a current allocated capacity enough
  * to store 1000 elements or greater), this value will be 10% greater than the 
- * current capacity.
- * For smaller vectors, the value will be 50% greater than the current capacity.
+ * current capacity. For smaller vectors, this value will be 50% greater than 
+ * the current capacity.
+ * 
+ * If restrictive capacity expansion mode is active, the value will always be 
+ * 10% greater, regardless of the current capacity.
 */
 template<typename T, size_t N>
 inline size_t nostl::vector<T, N>::expand_to_fit() const {
-	// figure out factor based on vector's current size and return new capacity
-	float factor = this->m_capacity < 1000 ? 1.5f : 1.1f;
-	return (size_t)(std::ceil(this->m_capacity * factor));
+	
+	// check if restrictive capacity expansion mode is active
+	nostl::policy_flags mask{nostl::policy_flags::RESTRICTIVE};
+	bool restrictive = static_cast<int>(this->m_mem_policy & mask) != 0;
+
+	// figure out factor based on vector's current size
+	float factor = restrictive || this->m_capacity >= 1000 ? 1.1f : 1.5f;
+
+	// return new capacity
+	return static_cast<size_t>(std::ceil(this->m_capacity * factor));
 }
 
 /********** Free Functions **********/
@@ -874,7 +939,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 
 #endif // NOSTL_VECTOR_H
 
-/** @todo retrictive capacity expansion mode: always expand by a factor of 1.1 when set */
+/** @todo member functions for checking m_mem_policy's current state */
 /** @todo implement proper type checking in constructors/assignment operators */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */
