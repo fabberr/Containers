@@ -6,11 +6,12 @@
 // C++ library
 #include <vector> 			// std::vector
 #include <string>			// std::string
-#include <iostream> 		// std::cout, std::ostream, std::hex, std::dec
-#include <type_traits> 		// std::is_fundamental
+#include <iostream> 		// std::cout, std::ostream, std::hex
+#include <type_traits> 		// std::is_fundamental, std::is_pointer, std::is_member_pointer
 #include <utility> 			// std::move, std::forward
 #include <initializer_list> // std::initializer_list
 #include <algorithm> 		// std::max
+#include <functional> 		// std::function
 
 // C library
 #include <cstddef> 	// size_t, ptrdiff_t
@@ -142,7 +143,7 @@ namespace nostl {
  *   > size: size of list
 */
 template<typename T, typename... U>
-vector(T, U...) -> vector<T, sizeof... (U)>;
+vector(T, U...) -> vector<T, 1 + sizeof... (U)>;
 
 /**
  * const vector constructed from initializer list -> deduce:
@@ -150,7 +151,7 @@ vector(T, U...) -> vector<T, sizeof... (U)>;
  *   > size: size of list
 */
 template<typename T, typename... U>
-vector(const T, U...) -> vector<T, sizeof... (U)>;
+vector(const T, U...) -> vector<T, 1 + sizeof... (U)>;
 
 /********** Constructors & Destructor Definitions **********/
 
@@ -750,23 +751,34 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 	// begin vector
 	os << "[";
 
-	// insert each element
-	for (size_t i = 0; i < rhs.len(); i++) {
+	// iterator type alias
+	using itr_t = typename nostl::vector<T, N>::const_iterator;
 
-		// check if T is of a primitive type
-		if (std::is_fundamental<T>::value) {
-			// insert element
-			os << rhs[i];
-		} else {
-			// insert element surrounded by brackets
-			os << "{ " << rhs[i] << " }";
-		}
-
-		// if there are still elements to insert, insert a comma
-		if (i + 1 < rhs.len()) {
-			os << ", ";
-		}
+	// type checking
+	std::function<void(itr_t&)> insert_func; // insertion function
+	if (std::is_fundamental<T>::value) {
+		// T is fundamental, simply insert
+		insert_func = [&os](itr_t& it){ os << *it; };
+	} else if (std::is_pointer<T>::value || std::is_member_pointer<T>::value) {
+		// T is a pointer, insert in base16
+		insert_func = [&os](itr_t& it){
+			const auto flags = os.flags(); 	// save current formatting flags
+			os << std::hex << *it; 			// insert element in base16
+			os.flags(flags); 				// set flags to their original state
+		};
+	} else {
+		// default case
+		insert_func = [&os](itr_t& it) { os << "{ " << *it << " }"; };
 	}
+
+	// iterate through array, inserting each element
+	itr_t it = rhs.begin();
+	for (; (it + 1) != rhs.end(); ++it) {
+		// insert currrent element, followed by a comma
+		insert_func(it);
+		os << ", ";
+	}
+	insert_func(it); // insert last element
 
 	// end vector
 	os << "]";

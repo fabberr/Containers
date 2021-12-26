@@ -6,8 +6,9 @@
 // C++ library
 #include <initializer_list> // std::initializer_list
 #include <array> 			// std::array
-#include <type_traits> 		// std::is_fundamental
-#include <iostream> 		// std::cout, std::ostream, std::hex, std::dec
+#include <type_traits> 		// std::is_fundamental, std::is_pointer, std::is_member_pointer
+#include <iostream> 		// std::cout, std::ostream, std::hex
+#include <functional> 		// std::function
 
 // C library
 #include <cstddef> // size_t. ptrdiff_t
@@ -106,7 +107,7 @@ namespace nostl
  *   > size: size of list
 */
 template<typename T, typename... U>
-array(T, U...) -> array<T, sizeof... (U)>;
+array(T, U...) -> array<T, 1 + sizeof... (U)>;
 
 /**
  * const array constructed from initializer list -> deduce:
@@ -114,7 +115,7 @@ array(T, U...) -> array<T, sizeof... (U)>;
  *   > size: size of list
 */
 template<typename T, typename... U>
-array(const T, U...) -> array<T, sizeof... (U)>;
+array(const T, U...) -> array<T, 1 + sizeof... (U)>;
 
 /********** Constructors & Destructor Definitions **********/
 
@@ -420,7 +421,7 @@ T& nostl::array<T, N>::operator[](size_type idx) {
 */
 template<typename T, size_t N>
 nostl::array<T, N>& nostl::array<T, N>::operator=(const nostl::array<T, N>& other) {
-	std::cout << "copy-assigning into instance\n";
+	// std::cout << "copy-assigning into instance\n";
 
 	// iterator type aliases
 	using itr_t = nostl::array<T, N>::iterator;
@@ -454,7 +455,7 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(const nostl::array<T, N>& othe
 */
 template<typename T, size_t N>
 nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
-	std::cout << "move-assigning into instance\n";
+	// std::cout << "move-assigning into instance\n";
 
 	// iterator type alias
 	using itr_t = nostl::array<T, N>::iterator;
@@ -498,29 +499,30 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<T, N>& rhs) {
 	// begin array
 	os << "[";
 
-	// insert each element
-	for (size_t i = 0; i < N; i++) {
-
- 		// check if T is of a fundamental type
-		if (std::is_fundamental<T>::value) {
-			// insert element
-			os << rhs[i];
-		} else {
-			if (std::is_pointer<T>::value || std::is_member_pointer<T>::value) {
-				// T is a pointer, insert as base16
-				const auto base = os.basefield; 	// save current basefield
-				os << std::hex << rhs[i] << base; 	// set base16, insert element, set original basesield
-			} else {
-				// insert element surrounded by brackets
-				os << "{ " << rhs[i] << " }";
-			}
-		}
-
-		// if there are still elements to insert, insert a comma
-		if (i + 1 < N) {
-			os << ", ";
-		}
+	// type checking
+	std::function<void(size_t)> insert_func; // insertion function
+	if (std::is_fundamental<T>::value) {
+		// T is fundamental, simply insert
+		insert_func = [&os, &rhs](size_t i){ os << rhs[i]; };
+	} else if (std::is_pointer<T>::value || std::is_member_pointer<T>::value) {
+		// T is a pointer, insert in base16
+		insert_func = [&os, &rhs](size_t i){
+			const auto flags = os.flags(); 	// save current formatting flags
+			os << std::hex << rhs[i]; 		// insert element in base16
+			os.flags(flags); 				// set flags to their original state
+		};
+	} else {
+		// default case
+		insert_func = [&os, &rhs](size_t i) { os << "{ " << rhs[i] << " }"; };
 	}
+
+	// iterate through array, inserting each element
+	for (size_t i = 0; (i + 1) < rhs.len(); i++) {
+		// insert currrent element, followed by a comma
+		insert_func(i);
+		os << ", ";
+	}
+	insert_func(rhs.len() - 1); // insert last element
 
 	// end array
 	os << "]";
@@ -561,6 +563,5 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 
 #endif // NOSTL_ARRAY
 
-/** @todo refactor type checking inside loops */
 /** @todo swap member function */
 /** @todo refactor: either remove references to member types or use them everywher */

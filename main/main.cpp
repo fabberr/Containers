@@ -1,11 +1,13 @@
 /********** Included Headers **********/
 
 // C++ library
-#include <iostream>	// std::cout
-#include <utility> 	// std::move
-#include <string> 	// std::string
-#include <vector> 	// std::vector
-#include <array> 	// std::array
+#include <iostream>		// std::cout
+#include <utility> 		// std::move
+#include <string> 		// std::string
+#include <vector> 		// std::vector
+#include <array> 		// std::array
+#include <functional> 	// std::function
+#include <type_traits> 	// std::is_fundamental, std::is_pointer, std::is_member_pointer
 
 // libnostl
 #include <nostl/vector.h> 	// nostl::vector
@@ -42,19 +44,9 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	constexpr uint32_t n = 5;
-	using arr_t = nostl::array<int*, n>;
-	arr_t ptrs;
-
-	for (auto& ptr : ptrs) {
-		ptr = new int;
-	}
-
-	std::cout << ptrs << std::endl;
-
-	for (auto& ptr : ptrs) {
-		delete ptr;
-	}
+	nostl::vector collection{ 10, 20, 30, 40, 50 };
+	collection.resize(100);
+	print_vec_stats(collection);
 
 	return 0;
 }
