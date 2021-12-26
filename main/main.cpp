@@ -14,7 +14,7 @@
 /********** Functions **********/
 
 /**
- * Prints a nostl::vector along with information about it's memory footprint to 
+ * Prints a nostl::vector, along with information about it's memory footprint to 
  * the standard character output.
 */
 template<typename T, size_t N>
@@ -40,30 +40,22 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 /********** Main Entry Point **********/
 
-template<typename T, size_t N>
-std::ostream& operator<<(std::ostream& os, const std::array<T, N>& rhs) {
-	os << '[';
-	typename std::array<T, N>::const_iterator it = rhs.begin();
-	while (it != rhs.end()) {
-		os << *it;
-		if (++it != rhs.end()) {
-			os << ", ";
-		}
-	}
-	os << ']';
-	return os;
-}
-
 int main() {
 
-	using arr_t = nostl::array<int, 10>;
-	arr_t arr{ 10, 20, 30, 40, 50 };
+	constexpr uint32_t n = 5;
+	using arr_t = nostl::array<int*, n>;
+	arr_t ptrs;
 
-	const nostl::array deduced{ 1, 2, 3, 4, 5 };
+	for (auto& ptr : ptrs) {
+		ptr = new int;
+	}
 
-	std::cout << "arr: " << arr << std::endl;
-	std::cout << "deduced: " << deduced << std::endl;
-	
+	std::cout << ptrs << std::endl;
+
+	for (auto& ptr : ptrs) {
+		delete ptr;
+	}
+
 	return 0;
 }
 

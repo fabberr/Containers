@@ -6,7 +6,8 @@
 // C++ library
 #include <initializer_list> // std::initializer_list
 #include <array> 			// std::array
-#include <type_traits> 		// std::is_arithmetic
+#include <type_traits> 		// std::is_fundamental
+#include <iostream> 		// std::cout, std::ostream, std::hex, std::dec
 
 // C library
 #include <cstddef> // size_t. ptrdiff_t
@@ -97,13 +98,23 @@ namespace nostl
 	
 	}; // class array
 
-/********** Class Template Argument Deduction Guides **********/
+/********** Template Argument Deduction Guides **********/
 
+/**
+ * Array constructed from initializer list -> deduce:
+ *   > type: type of initializer list
+ *   > size: size of list
+*/
 template<typename T, typename... U>
-array(T, U...) -> array<T, 1 + sizeof...(U)>;
+array(T, U...) -> array<T, sizeof... (U)>;
 
+/**
+ * const array constructed from initializer list -> deduce:
+ *   > type: type of initializer list
+ *   > size: size of list
+*/
 template<typename T, typename... U>
-array(const T, U...) -> array<T, 1 + sizeof...(U)>;
+array(const T, U...) -> array<T, sizeof... (U)>;
 
 /********** Constructors & Destructor Definitions **********/
 
@@ -156,15 +167,15 @@ nostl::array<T, N>::array(const nostl::array<T, N>& other) {
 	using citr_t = nostl::array<T, N>::const_iterator;
 
 	// Check if T is a primitive and copy data accordingly.
-	// For a comprehensible table of what is considered an arithmetic type, see: 
-	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
-	if (std::is_arithmetic<T>::value) {
-		// T is of an arithmetic type, use std::memcpy
+	// For a comprehensible table of what is considered a fundamental type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/is_fundamental/>
+	if (std::is_fundamental<T>::value) {
+		// T is of a fundamental type, use std::memcpy
 		if (this->m_data && other.m_data) {
 			std::memcpy(this->m_data, other.m_data, N * sizeof (T));
 		}
 	} else {
-		// T is not of an arithmetic type, call copy constructor for each element
+		// T is not of a fundamental type, call copy constructor for each element
 		itr_t i = this->begin();
 		citr_t j = other.begin();
 		while (i != this->end()) {
@@ -184,15 +195,15 @@ nostl::array<T, N>::array(const std::array<T, N>& other) {
 	using citr_t = typename std::array<T, N>::const_iterator;
 
 	// Check if T is a primitive and copy data accordingly.
-	// For a comprehensible table of what is considered an arithmetic type, see: 
-	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
-	if (std::is_arithmetic<T>::value) {
-		// T is of an arithmetic type, use std::memcpy
+	// For a comprehensible table of what is considered a fundamental type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/is_fundamental/>
+	if (std::is_fundamental<T>::value) {
+		// T is of a fundamental type, use std::memcpy
 		if (this->m_data && other.data()) {
 			std::memcpy(this->m_data, other.data(), N * sizeof (T));
 		}
 	} else {
-		// T is not of an arithmetic type, call copy constructor for each element
+		// T is not of a fundamental type, call copy constructor for each element
 		itr_t i = this->begin();
 		citr_t j = other.begin();
 		while (i != this->end()) {
@@ -213,10 +224,10 @@ nostl::array<T, N>::array(nostl::array<T, N>&& other) {
 	using itr_t = nostl::array<T, N>::iterator;
 
 	// Check if T is a primitive and move data accordingly.
-	// For a comprehensible table of what is considered an arithmetic type, see: 
-	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
-	if (std::is_arithmetic<T>::value) {
-		// T is of an arithmetic type, use std::memmove
+	// For a comprehensible table of what is considered a fundamental type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/is_fundamental/>
+	if (std::is_fundamental<T>::value) {
+		// T is of a fundamental type, use std::memmove
 		size_t count = N * sizeof (T);
 		if (this->m_data && other.m_data) {
 			std::memmove(this->m_data, other.m_data, count);
@@ -225,7 +236,7 @@ nostl::array<T, N>::array(nostl::array<T, N>&& other) {
 		// leave other array in an "empty" state
 		std::memset(other.m_data, 0, count);
 	} else {
-		// T is not of an arithmetic type, call move constructor for each element
+		// T is not of a fundamental type, call move constructor for each element
 		itr_t i = this->begin(), j = other.begin();
 		while (i != this->end()) {
 			*i++ = std::move(*j++);
@@ -416,15 +427,15 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(const nostl::array<T, N>& othe
 	using citr_t = nostl::array<T, N>::const_iterator;
 
 	// Check if T is a primitive and copy data accordingly.
-	// For a comprehensible table of what is considered an arithmetic type, see: 
-	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
-	if (std::is_arithmetic<T>::value) {
-		// T is of an arithmetic type, use std::memcpy
+	// For a comprehensible table of what is considered a fundamental type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/is_fundamental/>
+	if (std::is_fundamental<T>::value) {
+		// T is of a fundamental type, use std::memcpy
 		if (this->m_data && other.m_data) {
 			std::memcpy(this->m_data, other.m_data, N * sizeof (T));
 		}
 	} else {
-		// T is not of an arithmetic type, call copy constructor for each element
+		// T is not of a fundamental type, call copy constructor for each element
 		itr_t i = this->begin();
 		citr_t j = other.begin();
 		while (i != this->end()) {
@@ -449,10 +460,10 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
 	using itr_t = nostl::array<T, N>::iterator;
 
 	// Check if T is a primitive and move data accordingly.
-	// For a comprehensible table of what is considered an arithmetic type, see: 
-	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
-	if (std::is_arithmetic<T>::value) {
-		// T is of an arithmetic type, use std::memmove
+	// For a comprehensible table of what is considered a fundamental type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/is_fundamental/>
+	if (std::is_fundamental<T>::value) {
+		// T is of a fundamental type, use std::memmove
 		size_t count = N * sizeof (T);
 		if (this->m_data && other.m_data) {
 			std::memmove(this->m_data, other.m_data, count);
@@ -461,7 +472,7 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
 		// leave other array in an "empty" state
 		std::memset(other.m_data, 0, count);
 	} else {
-		// T is not of an arithmetic type, call move constructor for each element
+		// T is not of a fundamental type, call move constructor for each element
 		itr_t i = this->begin(), j = other.begin();
 		while (i != this->end()) {
 			*i++ = std::move(*j++);
@@ -490,13 +501,19 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<T, N>& rhs) {
 	// insert each element
 	for (size_t i = 0; i < N; i++) {
 
-		// check if T is of a primitive type
-		if (std::is_arithmetic<T>::value) {
+ 		// check if T is of a fundamental type
+		if (std::is_fundamental<T>::value) {
 			// insert element
 			os << rhs[i];
 		} else {
-			// insert element surrounded by brackets
-			os << "{ " << rhs[i] << " }";
+			if (std::is_pointer<T>::value || std::is_member_pointer<T>::value) {
+				// T is a pointer, insert as base16
+				const auto base = os.basefield; 	// save current basefield
+				os << std::hex << rhs[i] << base; 	// set base16, insert element, set original basesield
+			} else {
+				// insert element surrounded by brackets
+				os << "{ " << rhs[i] << " }";
+			}
 		}
 
 		// if there are still elements to insert, insert a comma
@@ -544,5 +561,6 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 
 #endif // NOSTL_ARRAY
 
+/** @todo refactor type checking inside loops */
 /** @todo swap member function */
 /** @todo refactor: either remove references to member types or use them everywher */

@@ -6,8 +6,8 @@
 // C++ library
 #include <vector> 			// std::vector
 #include <string>			// std::string
-#include <iostream> 		// std::cout, std::ostream
-#include <type_traits> 		// std::is_arithmetic
+#include <iostream> 		// std::cout, std::ostream, std::hex, std::dec
+#include <type_traits> 		// std::is_fundamental
 #include <utility> 			// std::move, std::forward
 #include <initializer_list> // std::initializer_list
 #include <algorithm> 		// std::max
@@ -134,13 +134,23 @@ namespace nostl {
 
 	}; // class vector
 
-/********** Class Template Argument Deduction Guides **********/
+/********** Template Argument Deduction Guides **********/
 
+/**
+ * Vector constructed from initializer list -> deduce:
+ *   > type: type of initializer list
+ *   > size: size of list
+*/
 template<typename T, typename... U>
-vector(T, U...) -> vector<T, 1 + sizeof...(U)>;
+vector(T, U...) -> vector<T, sizeof... (U)>;
 
+/**
+ * const vector constructed from initializer list -> deduce:
+ *   > type: type of initializer list
+ *   > size: size of list
+*/
 template<typename T, typename... U>
-vector(const T, U...) -> vector<T, 1 + sizeof...(U)>;
+vector(const T, U...) -> vector<T, sizeof... (U)>;
 
 /********** Constructors & Destructor Definitions **********/
 
@@ -311,7 +321,7 @@ nostl::vector<T, N>::~vector() {
 	// deallocate raw memory block without calling any destructors
 	::operator delete(this->m_data, this->m_capacity);
 
-	// leave this in an "empty" state
+	// leave this in an "empty" state, unecessary cleanup of resources about to be returned to the system but w/e
 	this->m_data = nullptr;
 	this->m_size = this->m_capacity = 0;
 }
@@ -353,15 +363,15 @@ void nostl::vector<T, N>::resize(size_t new_capacity) {
 	}
 	
 	// Check if T is a primitive and copy data accordingly.
-	// For a comprehensible table of what is considered an arithmetic type, see: 
-	// <https://www.cplusplus.com/reference/type_traits/is_arithmetic/>
-	if (std::is_arithmetic<T>::value) {
-		// T is of an arithmetic type, use std::memcpy
+	// For a comprehensible table of what is considered a fundamental type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/is_fundamental/>
+	if (std::is_fundamental<T>::value) {
+		// T is of an fundamental type, use std::memcpy
 		if (this->m_data) {
 			std::memcpy(new_block, this->m_data, sizeof (T) * this->m_size);
 		}
 	} else {
-		// T is not of an arithmetic type, call move constructor for each element
+		// T is not of an fundamental type, call move constructor for each element
 		for (size_t i = 0; i < this->m_size; i++) {
 			// Move each element into the new block.
 			// Use placement new for complex types so that the constructor is actually 
@@ -744,7 +754,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 	for (size_t i = 0; i < rhs.len(); i++) {
 
 		// check if T is of a primitive type
-		if (std::is_arithmetic<T>::value) {
+		if (std::is_fundamental<T>::value) {
 			// insert element
 			os << rhs[i];
 		} else {
@@ -797,6 +807,9 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 
 #endif // NOSTL_VECTOR_H
 
-/** @todo revert to std::is_fundamental instead of using std::is_arithmetic */
+/** @todo retrictive capacity expansion mode: always expand by a factor of 1.1 when set */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */
+/** @todo construct from iterator range */
+/** @todo template argument deduction guide for iterator range constructor */
+/** @todo swap() function */
