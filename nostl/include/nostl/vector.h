@@ -793,20 +793,19 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 template<size_t N>
 std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& rhs) {
 
+	// iterator type alias
+	using itr_t = typename nostl::vector<T, N>::const_iterator;
+
 	// begin vector
 	os << "[";
 
-	// insert each string
-	for (size_t i = 0; i < rhs.len(); i++) {
-
-		// insert string
-		os << '"' << rhs[i] << '"';
-
-		// if there are still strings to insert, insert a comma
-		if (i + 1 < rhs.len()) {
-			os << ", ";
-		}
+	// iterate through vector, inserting each string
+	itr_t it = rhs.begin();
+	for (; (it + 1) != rhs.end(); ++it) {
+		// insert currrent string, followed by a comma
+		os << '\"' << *it << '\"' << ", ";
 	}
+	os << '\"' << *it << '\"'; // insert last string
 
 	// end vector
 	os << "]";
@@ -820,6 +819,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 #endif // NOSTL_VECTOR_H
 
 /** @todo retrictive capacity expansion mode: always expand by a factor of 1.1 when set */
+/** @todo implement proper type checking in constructors/assignment operators */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */
 /** @todo construct from iterator range */
