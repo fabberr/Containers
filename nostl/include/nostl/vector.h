@@ -27,6 +27,62 @@
 namespace nostl {
 
 	/**
+	 * Memory usage policy flags.
+	*/
+	enum class policy_flags {
+		NORMAL 		= 0x80, /** [1000 0000] Sets the memory usage policy to its normal behavior. */
+		RESTRICTIVE = 0x40 	/** [0100 0000] Sets restrictive memory usage mode. Causes the vector to always expand by 10% of its current max. capacity regardless of its value. */
+	}; // enum class policy_flags
+	
+	/** Bitwise AND operator overload for enum class policy_flags */
+	inline constexpr 
+	policy_flags 
+	operator&(
+		const policy_flags& lhs, 
+		const policy_flags& rhs
+	) { return policy_flags(static_cast<int>(lhs) & static_cast<int>(rhs)); }
+	
+	/** Bitwise OR operator overload for enum class policy_flags */
+	inline constexpr 
+	policy_flags 
+	operator|(
+		const policy_flags& lhs, 
+		const policy_flags& rhs
+	) { return policy_flags(static_cast<int>(lhs) | static_cast<int>(rhs)); }
+	
+	/** Bitwise XOR operator overload for enum class policy_flags */
+	inline constexpr 
+	policy_flags 
+	operator^(
+		const policy_flags& lhs, 
+		const policy_flags& rhs
+	) { return policy_flags(static_cast<int>(lhs) ^ static_cast<int>(rhs)); }
+
+	/** Bitwise AND assignment operator overload for enum class policy_flags */
+	inline constexpr 
+	policy_flags 
+	operator&=(
+		policy_flags& lhs, 
+		const policy_flags& rhs
+	) { return lhs = lhs & rhs; }
+
+	/** Bitwise OR assignment operator overload for enum class policy_flags */
+	inline constexpr 
+	policy_flags 
+	operator|=(
+		policy_flags& lhs, 
+		const policy_flags& rhs
+	) { return lhs = lhs | rhs; }
+
+	/** Bitwise XOR assignment operator overload for enum class policy_flags */
+	inline constexpr 
+	policy_flags 
+	operator^=(
+		policy_flags& lhs, 
+		const policy_flags& rhs
+	) { return lhs = lhs ^ rhs; }
+	
+	/**
 	 * Dynamic random-access container using an underlying C-style heap-allocated 
 	 * array for storing data contiguously in memory.
 	 * 
@@ -794,7 +850,7 @@ template<size_t N>
 std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& rhs) {
 
 	// iterator type alias
-	using itr_t = typename nostl::vector<T, N>::const_iterator;
+	using itr_t = typename nostl::vector<std::string, N>::const_iterator;
 
 	// begin vector
 	os << "[";
