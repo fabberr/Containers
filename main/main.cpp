@@ -44,9 +44,9 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	nostl::vector collection{ 10, 20, 30, 40, 50 };
-	collection.resize(100);
-	print_vec_stats(collection);
+	nostl::vector coll{ 10, 20, 30, 40, 50 };
+	coll.resize(100);
+	print_vec_stats(coll);
 
 	return 0;
 }

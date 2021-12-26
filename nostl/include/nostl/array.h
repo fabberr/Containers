@@ -563,5 +563,6 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 
 #endif // NOSTL_ARRAY
 
+/** @todo unfuck array iterator */
 /** @todo swap member function */
 /** @todo refactor: either remove references to member types or use them everywher */

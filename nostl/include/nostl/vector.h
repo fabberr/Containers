@@ -748,11 +748,11 @@ inline size_t nostl::vector<T, N>::expand_to_fit() const {
 template<typename T, size_t N>
 std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 
-	// begin vector
-	os << "[";
-
 	// iterator type alias
 	using itr_t = typename nostl::vector<T, N>::const_iterator;
+
+	// begin vector
+	os << "[";
 
 	// type checking
 	std::function<void(itr_t&)> insert_func; // insertion function
@@ -771,7 +771,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 		insert_func = [&os](itr_t& it) { os << "{ " << *it << " }"; };
 	}
 
-	// iterate through array, inserting each element
+	// iterate through vector, inserting each element
 	itr_t it = rhs.begin();
 	for (; (it + 1) != rhs.end(); ++it) {
 		// insert currrent element, followed by a comma
