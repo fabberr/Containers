@@ -888,9 +888,6 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 	// iterator type alias
 	using itr_t = typename nostl::vector<T, N>::const_iterator;
 
-	// begin vector
-	os << "[";
-
 	// type checking
 	std::function<void(itr_t&)> insert_func; // insertion function
 	if (std::is_fundamental<T>::value) {
@@ -907,6 +904,9 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 		// default case
 		insert_func = [&os](itr_t& it) { os << "{ " << *it << " }"; };
 	}
+
+	// begin vector
+	os << "[";
 
 	// iterate through vector, inserting each element
 	itr_t it = rhs.begin();
