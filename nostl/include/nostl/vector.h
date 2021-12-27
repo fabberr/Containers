@@ -183,6 +183,8 @@ namespace nostl {
 		const_iterator end() const;
 		const_iterator cend() const;
 
+		bool plcy_normal() const;
+		bool plcy_restrictive() const;
 		policy policy_flags() const;
 		policy policy_flags(const policy& policy);
 		const policy& toggle_restrictive();
@@ -473,7 +475,7 @@ void nostl::vector<T, N>::resize(size_t new_capacity) {
 }
 
 /**
- * Reduces the vector's maximum capacity to be equal to vector's length.
+ * Reduces the vector's maximum capacity to be equal to its length.
 */
 template<typename T, size_t N>
 void nostl::vector<T, N>::shrink_to_fit() {
@@ -709,6 +711,24 @@ typename nostl::vector<T, N>::const_iterator nostl::vector<T, N>::cend() const {
 }
 
 /**
+ * Returns true if the expansion capacity policy is set to its normal behavior.
+*/
+template<typename T, size_t N>
+bool nostl::vector<T, N>::plcy_normal() const {
+	nostl::policy_flags mask{nostl::policy_flags::NORMAL};
+	return static_cast<int>(this->m_mem_policy & mask) != 0;
+}
+
+/**
+ * Returns true if the expansion capacity policy is set to restrictive mode.
+*/
+template<typename T, size_t N>
+bool nostl::vector<T, N>::plcy_restrictive() const {
+	nostl::policy_flags mask{nostl::policy_flags::RESTRICTIVE};
+	return static_cast<int>(this->m_mem_policy & mask) != 0;
+}
+
+/**
  * Returns the current capacity expansion policy.
 */
 template<typename T, size_t N>
@@ -835,9 +855,9 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(nostl::vector<T, N>&& other)
 /********** Private Member Function Definitions **********/
 
 /**
- * Helper function for vector::append. Called if the vector is at full capacity 
- * when trying to append a new element. Returns an integral value to be set as 
- * the vector's new capacity.
+ * Helper function for vector::push_back, vector::emplace_back and vector::
+ * insert. Called if the vector is at full capacity when trying to append a new
+ * element. Returns an integral value to be set as the vector's new capacity.
  * 
  * If the vector is large (defined as having a current allocated capacity enough
  * to store 1000 elements or greater), this value will be 10% greater than the 
@@ -845,26 +865,22 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(nostl::vector<T, N>&& other)
  * the current capacity.
  * 
  * If restrictive capacity expansion mode is active, the value will always be 
- * 10% greater, regardless of the current capacity.
+ * 10% greater than the current capacity, regardless of its value.
 */
 template<typename T, size_t N>
 inline size_t nostl::vector<T, N>::expand_to_fit() const {
 	
-	// check if restrictive capacity expansion mode is active
-	nostl::policy_flags mask{nostl::policy_flags::RESTRICTIVE};
-	bool restrictive = static_cast<int>(this->m_mem_policy & mask) != 0;
-
-	// figure out factor based on vector's current size
-	float factor = restrictive || this->m_capacity >= 1000 ? 1.1f : 1.5f;
-
-	// return new capacity
+	// Determine expansion factor, compute and return new capacity.
+	// The factor is determined by a combination both restrictive capacity 
+	// expansion mode and current capacity checks.
+	float factor = (this->plcy_restrictive() || this->m_capacity >= 1000) ? 1.1f : 1.5f;
 	return static_cast<size_t>(std::ceil(this->m_capacity * factor));
 }
 
 /********** Free Functions **********/
 
 /**
- * Default stream insertion operator overload for any specialization.
+ * Default stream insertion operator overload for generic specialization.
 */
 template<typename T, size_t N>
 std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {

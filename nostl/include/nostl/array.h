@@ -492,7 +492,7 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
 /********** Free Functions **********/
 
 /**
- * Default stream insertion operator overload for any specialization.
+ * Default stream insertion operator overload for generic specialization.
 */
 template<typename T, size_t N>
 std::ostream& operator<<(std::ostream& os, const nostl::array<T, N>& rhs) {
