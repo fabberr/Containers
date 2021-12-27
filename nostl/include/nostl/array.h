@@ -501,29 +501,29 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<T, N>& rhs) {
 	os << "[";
 
 	// type checking
-	std::function<void(size_t)> insert_func; // insertion function
+	std::function<void(size_t)> ostream_insert; // stream insertion function
 	if (std::is_fundamental<T>::value) {
 		// T is fundamental, simply insert
-		insert_func = [&os, &rhs](size_t i){ os << rhs[i]; };
+		ostream_insert = [&os, &rhs](size_t i){ os << rhs[i]; };
 	} else if (std::is_pointer<T>::value || std::is_member_pointer<T>::value) {
 		// T is a pointer, insert in base16
-		insert_func = [&os, &rhs](size_t i){
+		ostream_insert = [&os, &rhs](size_t i){
 			const auto flags = os.flags(); 	// save current formatting flags
 			os << std::hex << rhs[i]; 		// insert element in base16
 			os.flags(flags); 				// set flags to their original state
 		};
 	} else {
 		// default case
-		insert_func = [&os, &rhs](size_t i) { os << "{ " << rhs[i] << " }"; };
+		ostream_insert = [&os, &rhs](size_t i) { os << "{ " << rhs[i] << " }"; };
 	}
 
 	// iterate through array, inserting each element
 	for (size_t i = 0; (i + 1) < rhs.len(); i++) {
 		// insert currrent element, followed by a comma
-		insert_func(i);
+		ostream_insert(i);
 		os << ", ";
 	}
-	insert_func(rhs.len() - 1); // insert last element
+	ostream_insert(rhs.len() - 1); // insert last element
 
 	// end array
 	os << "]";

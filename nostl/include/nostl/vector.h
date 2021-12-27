@@ -889,20 +889,20 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 	using itr_t = typename nostl::vector<T, N>::const_iterator;
 
 	// type checking
-	std::function<void(itr_t&)> insert_func; // insertion function
+	std::function<void(itr_t&)> ostream_insert; // stream insertion function
 	if (std::is_fundamental<T>::value) {
 		// T is fundamental, simply insert
-		insert_func = [&os](itr_t& it){ os << *it; };
+		ostream_insert = [&os](itr_t& it){ os << *it; };
 	} else if (std::is_pointer<T>::value || std::is_member_pointer<T>::value) {
 		// T is a pointer, insert in base16
-		insert_func = [&os](itr_t& it){
+		ostream_insert = [&os](itr_t& it){
 			const auto flags = os.flags(); 	// save current formatting flags
 			os << std::hex << *it; 			// insert element in base16
 			os.flags(flags); 				// set flags to their original state
 		};
 	} else {
 		// default case
-		insert_func = [&os](itr_t& it) { os << "{ " << *it << " }"; };
+		ostream_insert = [&os](itr_t& it) { os << "{ " << *it << " }"; };
 	}
 
 	// begin vector
@@ -912,10 +912,10 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 	itr_t it = rhs.begin();
 	for (; (it + 1) != rhs.end(); ++it) {
 		// insert currrent element, followed by a comma
-		insert_func(it);
+		ostream_insert(it);
 		os << ", ";
 	}
-	insert_func(it); // insert last element
+	ostream_insert(it); // insert last element
 
 	// end vector
 	os << "]";
