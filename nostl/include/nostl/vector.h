@@ -189,6 +189,11 @@ namespace nostl {
 		policy policy_flags(const policy& policy);
 		const policy& toggle_restrictive();
 
+	private:
+		/********** Private Member Function Declarations **********/
+
+		inline size_t expand_to_fit() const;
+
 	public:
 		/********** Operator Overload Declarations **********/
 
@@ -200,11 +205,6 @@ namespace nostl {
 
 		vector& operator=(const vector& other);
 		vector& operator=(vector&& other);
-
-	private:
-		/********** Private Member Function Declarations **********/
-
-		inline size_t expand_to_fit() const;
 
 	}; // class vector
 
@@ -294,6 +294,9 @@ nostl::vector<T, N>::vector(const std::initializer_list<T>& ilist) :
 {
 	// std::cout << "constructing instance from initializer list\n";
 	
+	// iterator type alias
+	using itr_t = typename std::initializer_list<T>::iterator;
+
 	// Allocate initial memory for m_data.
 	// Calling vector::resize with m_size set to 0 and m_data pointing to NULL only 
 	// causes a new array of lenght new_capacity (ilist.size() in this case) to be 
@@ -302,7 +305,6 @@ nostl::vector<T, N>::vector(const std::initializer_list<T>& ilist) :
 	this->resize(std::max(N, ilist.size()));
 
 	// move elements from initializer list into this instance
-	using itr_t = typename std::initializer_list<T>::iterator;
 	for (itr_t it = ilist.begin(); it != ilist.end(); it++) {
 		this->emplace_back(std::move(*it));
 	}
@@ -418,8 +420,8 @@ template<typename T, size_t N>
 void nostl::vector<T, N>::clear() {
 
 	// call destructor of each element
-	for (size_t i = 0; i < this->m_size; i++) {
-		this->m_data[i].~T();
+	for (auto& e : *this) {
+		e.~T();
 	}
 	this->m_size = 0; // set size to 0
 }
@@ -758,6 +760,31 @@ const nostl::policy_flags& nostl::vector<T, N>::toggle_restrictive() {
 	return this->m_mem_policy;
 }
 
+/********** Private Member Function Definitions **********/
+
+/**
+ * Helper function for vector::push_back, vector::emplace_back and vector::
+ * insert. Called if the vector is at full capacity when trying to append a new
+ * element. Returns an integral value to be set as the vector's new capacity.
+ * 
+ * If the vector is large (defined as having a current allocated capacity enough
+ * to store 1000 elements or greater), this value will be 10% greater than the 
+ * current capacity. For smaller vectors, this value will be 50% greater than 
+ * the current capacity.
+ * 
+ * If restrictive capacity expansion mode is active, the value will always be 
+ * 10% greater than the current capacity, regardless of its value.
+*/
+template<typename T, size_t N>
+inline size_t nostl::vector<T, N>::expand_to_fit() const {
+	
+	// Determine expansion factor, compute and return new capacity.
+	// The factor is determined by a combination both restrictive capacity 
+	// expansion mode and current capacity checks.
+	float factor = (this->plcy_restrictive() || this->m_capacity >= 1000) ? 1.1f : 1.5f;
+	return static_cast<size_t>(std::ceil(this->m_capacity * factor));
+}
+
 /********** Operator Overload Definitions **********/
 
 /**
@@ -852,31 +879,6 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(nostl::vector<T, N>&& other)
 	return *this;
 }
 
-/********** Private Member Function Definitions **********/
-
-/**
- * Helper function for vector::push_back, vector::emplace_back and vector::
- * insert. Called if the vector is at full capacity when trying to append a new
- * element. Returns an integral value to be set as the vector's new capacity.
- * 
- * If the vector is large (defined as having a current allocated capacity enough
- * to store 1000 elements or greater), this value will be 10% greater than the 
- * current capacity. For smaller vectors, this value will be 50% greater than 
- * the current capacity.
- * 
- * If restrictive capacity expansion mode is active, the value will always be 
- * 10% greater than the current capacity, regardless of its value.
-*/
-template<typename T, size_t N>
-inline size_t nostl::vector<T, N>::expand_to_fit() const {
-	
-	// Determine expansion factor, compute and return new capacity.
-	// The factor is determined by a combination both restrictive capacity 
-	// expansion mode and current capacity checks.
-	float factor = (this->plcy_restrictive() || this->m_capacity >= 1000) ? 1.1f : 1.5f;
-	return static_cast<size_t>(std::ceil(this->m_capacity * factor));
-}
-
 /********** Free Functions **********/
 
 /**
@@ -888,7 +890,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 	// iterator type alias
 	using itr_t = typename nostl::vector<T, N>::const_iterator;
 
-	// type checking
+	// defining stream insertion operation
 	std::function<void(itr_t&)> ostream_insert; // stream insertion function
 	if (std::is_fundamental<T>::value) {
 		// T is fundamental, simply insert
@@ -909,13 +911,15 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 	os << "[";
 
 	// iterate through vector, inserting each element
-	itr_t it = rhs.begin();
-	for (; (it + 1) != rhs.end(); ++it) {
+	itr_t it;
+	for (it = rhs.begin(); (it + 1) != rhs.end(); ++it) {
 		// insert currrent element, followed by a comma
 		ostream_insert(it);
 		os << ", ";
 	}
-	ostream_insert(it); // insert last element
+	if (it.get_ptr()) {
+		ostream_insert(it); // insert last element
+	}
 
 	// end vector
 	os << "]";
@@ -937,12 +941,14 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 	os << "[";
 
 	// iterate through vector, inserting each string
-	itr_t it = rhs.begin();
-	for (; (it + 1) != rhs.end(); ++it) {
+	itr_t it;
+	for (it = rhs.begin(); (it + 1) != rhs.end(); ++it) {
 		// insert currrent string, followed by a comma
 		os << '\"' << *it << '\"' << ", ";
 	}
-	os << '\"' << *it << '\"'; // insert last string
+	if (it.get_ptr()) {
+		os << '\"' << *it << '\"'; // insert last string
+	}
 
 	// end vector
 	os << "]";
@@ -955,7 +961,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 
 #endif // NOSTL_VECTOR_H
 
-/** @todo member functions for checking m_mem_policy's current state */
+/** @todo refactor: use iterators instead of regular loops */
 /** @todo implement proper type checking in constructors/assignment operators */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */

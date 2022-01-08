@@ -12,7 +12,7 @@ namespace nostl {
 	 * container.
 	 * References an element stored in the container.
 	 * 
-	 * @tparam _iterable Either a nostl::vector or a class of the 
+	 * @tparam _iterable Either a nostl::vector, nostl::array or a class of the 
 	 *         nostl::array_iterator hierarchy containing necessary member types.
 	*/
 	template<typename _iterable>
@@ -134,6 +134,7 @@ namespace nostl {
 		 * The returned value may reference an element outside the container's bounds.
 		*/
 		array_iterator operator+(difference_type n) {
+			if (!this->m_ptr) return nullptr;
 			return nostl::array_iterator<_iterable>(this->m_ptr + n);
 		}
 
@@ -144,6 +145,7 @@ namespace nostl {
 		 * The returned value may reference an element outside the container's bounds.
 		*/
 		array_iterator operator-(difference_type n) {
+			if (!this->m_ptr) return nullptr;
 			return nostl::array_iterator<_iterable>(this->m_ptr - n);
 		}
 	

@@ -6,7 +6,7 @@
 // C++ library
 #include <initializer_list> // std::initializer_list
 #include <array> 			// std::array
-#include <type_traits> 		// std::is_fundamental, std::is_pointer, std::is_member_pointer
+#include <type_traits> 		// std::is_fundamental, std::is_pointer, std::is_member_pointer, std::is_scalar
 #include <iostream> 		// std::cout, std::ostream, std::hex
 #include <functional> 		// std::function
 
@@ -46,7 +46,7 @@ namespace nostl
 	private:
 		/********** Private Members **********/
 		
-		value_type m_data[N]; 	/** Stack-allocated array for storing elements. */
+		T m_data[N]; 	/** Stack-allocated array for storing elements. */
 	
 	public:
 		/********** Constructors & Destructor Declarations **********/
@@ -88,6 +88,11 @@ namespace nostl
 		iterator end();
 		const_iterator end() const;
 		const_iterator cend();
+	
+	private:
+		/********** Private Member Function Declarations **********/
+		
+		void seek_and_destroy();
 
 	public:
 		/********** Operator Overload Declarations **********/
@@ -141,20 +146,45 @@ nostl::array<T, N>::array(const T& value) {
 template<typename T, size_t N>
 nostl::array<T, N>::array(const std::initializer_list<T>& ilist) {
 
+	// assertions
+	assert(ilist.size() <= this->len());
+
 	// iterator type aliases
 	using itr_t = nostl::array<T, N>::iterator;
-	using litr_t = typename std::initializer_list<T>::iterator;
+	using inititr_t = typename std::initializer_list<T>::iterator;
 
-	// move elements from initializer list into this instance
-	itr_t it = this->begin();
-	litr_t l = ilist.begin();
-	while (l != ilist.end()) {
-		*it++ = std::move(*l++);
-	}
+	// Check if T is a primitive and copy data accordingly.
+	// For a comprehensible table of what is considered a scalar type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/>
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memmove and std::memset
+		// move
+		size_t count = ilist.size() * sizeof(T); 	// bytes
+		const inititr_t src = ilist.begin(); 		// initializer_list<_E>::iterator is _E*
+		if (this->m_data && src) {
+			std::memmove(this->m_data, src, count); // dst, src, byte count
+		}
+		
+		// fill
+		if (ilist.size() < this->len()) {
+			count = (this->len() - ilist.size()) * sizeof (T); 	// updated count
+			T* dst = this->m_data + ilist.size(); 				// offset, advance pointer ilist.size() positions
+			std::memset(dst, T(), count); 						// dst, value, byte count
+		}
+	} else {
+		// T is not a scalar, use move constructor
+		// move
+		itr_t it = this->begin();
+		inititr_t l = ilist.begin();
+		while (l != ilist.end()) {
+			*it++ = std::move(*l++);
+		}
 
-	// fill rest of array with default values
-	while (it != this->end()) {
-		*it++ = T();
+		// fill
+		while (it != this->end()) {
+			// no-op when initializer list has same size as array
+			*it++ = T();
+		}
 	}
 }
 
@@ -169,15 +199,16 @@ nostl::array<T, N>::array(const nostl::array<T, N>& other) {
 	using citr_t = nostl::array<T, N>::const_iterator;
 
 	// Check if T is a primitive and copy data accordingly.
-	// For a comprehensible table of what is considered a fundamental type, see: 
-	// <https://www.cplusplus.com/reference/type_traits/is_fundamental/>
-	if (std::is_fundamental<T>::value) {
-		// T is of a fundamental type, use std::memcpy
-		if (this->m_data && other.m_data) {
-			std::memcpy(this->m_data, other.m_data, N * sizeof (T));
+	// For a comprehensible table of what is considered a scalar type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/>
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memcpy
+		if (this->m_data && other.data()) {
+			const size_t count = this->len() * sizeof (T); 	// bytes
+			std::memcpy(this->m_data, other.data(), count); // dst, src, byte count
 		}
 	} else {
-		// T is not of a fundamental type, call copy constructor for each element
+		// T is not a scalar, use copy constructor
 		itr_t i = this->begin();
 		citr_t j = other.begin();
 		while (i != this->end()) {
@@ -197,15 +228,16 @@ nostl::array<T, N>::array(const std::array<T, N>& other) {
 	using citr_t = typename std::array<T, N>::const_iterator;
 
 	// Check if T is a primitive and copy data accordingly.
-	// For a comprehensible table of what is considered a fundamental type, see: 
-	// <https://www.cplusplus.com/reference/type_traits/is_fundamental/>
-	if (std::is_fundamental<T>::value) {
-		// T is of a fundamental type, use std::memcpy
+	// For a comprehensible table of what is considered a scalar type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/>
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memcpy
 		if (this->m_data && other.data()) {
-			std::memcpy(this->m_data, other.data(), N * sizeof (T));
+			const size_t count = this->len() * sizeof (T); 	// bytes
+			std::memcpy(this->m_data, other.data(), count); // dst, src, byte count
 		}
 	} else {
-		// T is not of a fundamental type, call copy constructor for each element
+		// T is not a scalar, use copy constructor
 		itr_t i = this->begin();
 		citr_t j = other.begin();
 		while (i != this->end()) {
@@ -226,19 +258,19 @@ nostl::array<T, N>::array(nostl::array<T, N>&& other) {
 	using itr_t = nostl::array<T, N>::iterator;
 
 	// Check if T is a primitive and move data accordingly.
-	// For a comprehensible table of what is considered a fundamental type, see: 
-	// <https://www.cplusplus.com/reference/type_traits/is_fundamental/>
-	if (std::is_fundamental<T>::value) {
-		// T is of a fundamental type, use std::memmove
-		size_t count = N * sizeof (T);
+	// For a comprehensible table of what is considered a scalar type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/>
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memmove
+		const size_t count = this->len() * sizeof (T); // bytes
 		if (this->m_data && other.m_data) {
-			std::memmove(this->m_data, other.m_data, count);
+			std::memmove(this->m_data, other.data(), count); // dst, src, byte count
 		}
 
 		// leave other array in an "empty" state
-		std::memset(other.m_data, 0, count);
+		std::memset(other.m_data, 0, count); // dst, value, byte count
 	} else {
-		// T is not of a fundamental type, call move constructor for each element
+		// T is not a scalar, call move constructor
 		itr_t i = this->begin(), j = other.begin();
 		while (i != this->end()) {
 			*i++ = std::move(*j++);
@@ -246,7 +278,7 @@ nostl::array<T, N>::array(nostl::array<T, N>&& other) {
 
 		// leave other array in an "empty" state
 		for (auto& e : other) {
-			e.~T();
+			e.~T(); // destroy object
 		}
 	}
 }
@@ -261,10 +293,16 @@ nostl::array<T, N>::array(nostl::array<T, N>&& other) {
 */
 template<typename T, size_t N>
 void nostl::array<T, N>::fill(const T& value) {
-	
+
 	// copy N instances of value into this array
-	for (auto& e : *this) {
-		e = value;
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memset
+		std::memset(this->m_data, value, N * sizeof(T));
+	} else {
+		// default case, use copy constructor
+		for (auto& e : *this) {
+			e = value;
+		}
 	}
 }
 
@@ -394,6 +432,20 @@ typename nostl::array<T, N>::const_iterator nostl::array<T, N>::cend() {
 	return const_iterator(this->m_data + N);
 }
 
+/********** Private Member Function Definitions **********/
+
+/**
+ * Helper function for copy and move assignment operator overloads.
+ * Calls destructor of every element in the array.
+*/
+template<typename T, size_t N>
+void nostl::array<T, N>::seek_and_destroy() {
+	// searching... seek and destroy
+	for (auto& e : *this) {
+		e.~T();
+	}
+}
+
 /********** Operator Overload Definitions **********/
 
 /**
@@ -429,15 +481,20 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(const nostl::array<T, N>& othe
 	using citr_t = nostl::array<T, N>::const_iterator;
 
 	// Check if T is a primitive and copy data accordingly.
-	// For a comprehensible table of what is considered a fundamental type, see: 
-	// <https://www.cplusplus.com/reference/type_traits/is_fundamental/>
-	if (std::is_fundamental<T>::value) {
-		// T is of a fundamental type, use std::memcpy
-		if (this->m_data && other.m_data) {
-			std::memcpy(this->m_data, other.m_data, N * sizeof (T));
+	// For a comprehensible table of what is considered a scalar type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/>
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memcpy
+		if (this->m_data && other.data()) {
+			const size_t count = this->len() * sizeof (T); 	// bytes
+			std::memcpy(this->m_data, other.data(), count); // dst, src, byte count
 		}
 	} else {
-		// T is not of a fundamental type, call copy constructor for each element
+		// T is not a scalar, use copy constructor
+		// destroy old elements
+		this->seek_and_destroy();
+
+		// copy over elements from other array into this instance
 		itr_t i = this->begin();
 		citr_t j = other.begin();
 		while (i != this->end()) {
@@ -462,19 +519,23 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
 	using itr_t = nostl::array<T, N>::iterator;
 
 	// Check if T is a primitive and move data accordingly.
-	// For a comprehensible table of what is considered a fundamental type, see: 
-	// <https://www.cplusplus.com/reference/type_traits/is_fundamental/>
-	if (std::is_fundamental<T>::value) {
-		// T is of a fundamental type, use std::memmove
-		size_t count = N * sizeof (T);
+	// For a comprehensible table of what is considered a scalar type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/>
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memmove
+		const size_t count = this->len() * sizeof (T); // bytes
 		if (this->m_data && other.m_data) {
-			std::memmove(this->m_data, other.m_data, count);
+			std::memmove(this->m_data, other.data(), count); // dst, src, byte count
 		}
 
 		// leave other array in an "empty" state
-		std::memset(other.m_data, 0, count);
+		std::memset(other.m_data, 0, count); // dst, value, byte count
 	} else {
-		// T is not of a fundamental type, call move constructor for each element
+		// T is not a scalar, call move constructor
+		// destroy old elements
+		this->seek_and_destroy();
+
+		// move over elements from other array into this instance
 		itr_t i = this->begin(), j = other.begin();
 		while (i != this->end()) {
 			*i++ = std::move(*j++);
@@ -482,7 +543,7 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(nostl::array<T, N>&& other) {
 
 		// leave other array in an "empty" state
 		for (auto& e : other) {
-			e.~T();
+			e.~T(); // destroy object
 		}
 	}
 
@@ -500,7 +561,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<T, N>& rhs) {
 	// begin array
 	os << "[";
 
-	// type checking
+	// defining stream insertion operation
 	std::function<void(size_t)> ostream_insert; // stream insertion function
 	if (std::is_fundamental<T>::value) {
 		// T is fundamental, simply insert
@@ -564,6 +625,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 
 #endif // NOSTL_ARRAY
 
-/** @todo unfuck array iterator */
+/** @todo unfuck iterators */
 /** @todo swap member function */
 /** @todo refactor: either remove references to member types or use them everywher */
+/** @todo refactor: very similar and redundant code in constructors i'm too lazy to abstract */

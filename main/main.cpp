@@ -16,8 +16,8 @@
 /********** Functions **********/
 
 /**
- * Prints a nostl::vector, along with information about it's memory footprint to 
- * the standard character output.
+ * Prints the contents of a nostl::vector along with information about it's 
+ * memory footprint to the standard character output.
 */
 template<typename T, size_t N>
 void print_vec_stats(const nostl::vector<T, N>& vec) {
@@ -44,13 +44,42 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 
 int main() {
 
-	nostl::vector<int> vec{ 1, 2 };
-	// std::cout << std::hex << static_cast<int>(vec.toggle_restrictive()) << std::dec << std::endl;
-	
-	for (size_t i = 3; i < 10; ++i) {
-		vec += i;
-		print_vec_stats(vec);
-	}
+	// array type alias
+	using arr_t = nostl::vector<int, 10>;
+
+	// testing initializer list constructor
+	std::cout << "--------------------\n";
+	std::cout << "constructing base object...\n";
+	arr_t base{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	std::cout << "base: " << base << std::endl; 						// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+	// testing copy constructor
+	std::cout << "--------------------\n";
+	std::cout << "copying base into copy_constructed...\n";
+	arr_t copy_constructed{base};
+	std::cout << "base: " << base << '\n'; 								// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+	std::cout << "copy_constructed: " << copy_constructed << std::endl; // copy_constructed: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+	// testing move constructor
+	std::cout << "--------------------\n";
+	std::cout << "moving copy_constructed into move_contructed...\n";
+	arr_t move_constructed{std::move(copy_constructed)};
+	std::cout << "copy_constructed: " << copy_constructed << '\n'; 		// copy_constructed: []
+	std::cout << "move_constructed: " << move_constructed << std::endl; // move_constructed: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+	// testing copy assignment operation
+	std::cout << "--------------------\n";
+	std::cout << "copying base into copy_assigned...\n";
+	arr_t copy_assigned = base;
+	std::cout << "base: " << base << '\n'; 							// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+	std::cout << "copy_assigned: " << copy_assigned << std::endl; 	// copy_assigned: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+	// testing move assignment operation
+	std::cout << "--------------------\n";
+	std::cout << "moving copy_assigned into move_assigned...\n";
+	arr_t move_assigned = std::move(copy_assigned);
+	std::cout << "copy_assigned: " << copy_assigned << '\n'; 		// copy_assigned: []
+	std::cout << "move_assigned: " << move_assigned << std::endl; 	// move_assigned: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 	return 0;
 }
