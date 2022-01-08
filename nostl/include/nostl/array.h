@@ -11,16 +11,16 @@
 #include <functional> 		// std::function
 
 // C library
-#include <cstddef> // size_t. ptrdiff_t
-#include <cstring> // std::memmove, std::memcpy, std::memset
+#include <cstddef> 	// size_t. ptrdiff_t
+#include <cstring> 	// std::memmove, std::memcpy, std::memset
+#include <cassert> 	// assert macro
 
 // libnostl
 #include <nostl/arr_iterators.h>
 
 /********** array.h **********/
 
-namespace nostl
-{
+namespace nostl {
 
 	/**
 	 * Fixed-length random-access container using an underlying C-style stack-
@@ -625,7 +625,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 
 #endif // NOSTL_ARRAY
 
-/** @todo unfuck iterators */
+/** @todo fix constructors/assignment operations: UNFUCK ITERATORS */
 /** @todo swap member function */
 /** @todo refactor: either remove references to member types or use them everywher */
 /** @todo refactor: very similar and redundant code in constructors i'm too lazy to abstract */

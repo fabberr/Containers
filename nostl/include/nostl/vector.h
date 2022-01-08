@@ -7,7 +7,7 @@
 #include <vector> 			// std::vector
 #include <string>			// std::string
 #include <iostream> 		// std::cout, std::ostream, std::hex
-#include <type_traits> 		// std::is_fundamental, std::is_pointer, std::is_member_pointer
+#include <type_traits> 		// std::is_fundamental, std::is_pointer, std::is_member_pointer, std::is_scalar
 #include <utility> 			// std::move, std::forward
 #include <initializer_list> // std::initializer_list
 #include <algorithm> 		// std::max
@@ -961,8 +961,8 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 
 #endif // NOSTL_VECTOR_H
 
+/** @todo implement proper type checking in constructors/assignment operations */
 /** @todo refactor: use iterators instead of regular loops */
-/** @todo implement proper type checking in constructors/assignment operators */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */
 /** @todo construct from iterator range */
