@@ -25,6 +25,9 @@ namespace nostl {
 	/**
 	 * Fixed-length random-access container using an underlying C-style stack-
 	 * allocated array for storing data contiguously in memory.
+	 * 
+	 * @tparam T Type of values stored in the array.
+	 * @tparam N Size of array.
 	*/
 	template<typename T, size_t N>
 	class array {
