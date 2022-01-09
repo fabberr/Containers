@@ -98,6 +98,6 @@ int main() {
 	return 0;
 }
 
-/** @todo REMOVE ITERATORS AND REWIRITE THAT FUCKING MESS FROM SCRATCH */
+/** @todo REMOVE ITERATORS AND REWRITE THAT FUCKING MESS FROM SCRATCH */
 /** @todo lrn2 unit test using CMake */
 /** @todo convert header files into C++20 modules maybe */
