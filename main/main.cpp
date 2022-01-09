@@ -45,12 +45,15 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 int main() {
 
 	// array type alias
-	using arr_t = nostl::vector<int, 10>;
+	using arr_t = nostl::vector<std::string, 10>;
+
+	// access to std::string literals
+	using namespace std::string_literals;
 
 	// testing initializer list constructor
 	std::cout << "--------------------\n";
 	std::cout << "constructing base object...\n";
-	arr_t base{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	const arr_t base{ "0"s, "1"s, "2"s, "3"s, "4"s, "5"s, "6"s, "7"s, "8"s, "9"s };
 	std::cout << "base: " << base << std::endl; 						// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 	// testing copy constructor
@@ -84,4 +87,5 @@ int main() {
 	return 0;
 }
 
+/** @todo REMOVE ITERATORS AND REWIRITE THAT FUCKING MESS FROM SCRATCH */
 /** @todo C++20 modules maybe */

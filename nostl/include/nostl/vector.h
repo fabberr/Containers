@@ -166,6 +166,9 @@ namespace nostl {
 
 		bool empty() const;
 
+		constexpr T* data() noexcept;
+		constexpr const T* data() const noexcept;
+
 		T& at(size_t idx);
 		const T& at(size_t idx) const;
 
@@ -330,13 +333,22 @@ nostl::vector<T, N>::vector(const nostl::vector<T, N>& other) :
 	// no data will be copied into this new array, copying is done here instead.
 	this->resize(std::max(N, other.m_size));
 
-	// copy each element of other vector into this instance
-	for (size_t i = 0; i < other.m_size; i++) {
-		// Copy data from other vector into this vector.
-		// Use placement new for complex types so that the copy constructor is actually
-		// called.
-		new(&this->m_data[i]) T(other.m_data[i]);
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memcpy
+		if (this->m_data && other.data()) {
+			const size_t count = this->len() * sizeof (T); 	// bytes
+			std::memcpy(this->m_data, other.data(), count); // dst, src, byte count
+		}
+	} else {
+		// T is not a scalar, use copy constructor
+		for (size_t i = 0; i < other.len(); ++i) {
+			// Copy data from other vector into this vector.
+			// Use placement new for non-scalar types so that the copy constructor is actually 
+			// called.
+			new(&this->m_data[i]) T(other.m_data[i]);
+		}
 	}
+
 	this->m_size = other.m_size; // set new size
 }
 
@@ -363,7 +375,7 @@ nostl::vector<T, N>::vector(const std::vector<T>& other) :
 	// copy each element of other std::vector into this instance
 	for (size_t i = 0; i < other.size(); i++) {
 		// Copy data from other std::vector into this vector.
-		// Use placement new for complex types so that the copy constructor is actually
+		// Use placement new for non-scalar types so that the copy constructor is actually
 		// called.
 		new(&this->m_data[i]) T(other[i]);
 	}
@@ -456,7 +468,7 @@ void nostl::vector<T, N>::resize(size_t new_capacity) {
 		// T is not of an fundamental type, call move constructor for each element
 		for (size_t i = 0; i < this->m_size; i++) {
 			// Move each element into the new block.
-			// Use placement new for complex types so that the constructor is actually 
+			// Use placement new for non-scalar types so that the constructor is actually 
 			// called and cast m_data[i] into an r-value to attempt a call to the move 
 			// constructor if it exists.
 			new(&new_block[i]) T(std::move(this->m_data[i]));
@@ -497,7 +509,7 @@ nostl::vector<T, N>& nostl::vector<T, N>::push_back(const T& elem) {
 	}
 
 	// Copy new element into last position, update size.
-	// Use placement new for complex types so that the copy constructor is actually
+	// Use placement new for non-scalar types so that the copy constructor is actually
 	// called.
 	new(&this->m_data[this->m_size++]) T(elem);
 
@@ -518,7 +530,7 @@ nostl::vector<T, N>& nostl::vector<T, N>::push_back(T&& elem) {
 	}
 
 	// Move new element into last position, update size.
-	// Use placement new for complex types so that the constructor is actually 
+	// Use placement new for non-scalar types so that the constructor is actually 
 	// called and cast elem into an r-value to attempt a call to the move 
 	// constructor if it exists.
 	new(&this->m_data[this->m_size++]) T(std::move(elem));
@@ -613,6 +625,22 @@ size_t nostl::vector<T, N>::allocsize() const { return sizeof (T) * this->m_capa
 */
 template<typename T, size_t N>
 bool nostl::vector<T, N>::empty() const { return this->m_size == 0; }
+
+/**
+ * Returns a pointer to the underlying array used to store the data.
+*/
+template<typename T, size_t N>
+constexpr T* nostl::vector<T, N>::data() noexcept {
+	return this->m_data;
+}
+
+/**
+ * Returns a const pointer to the underlying array used to store the data.
+*/
+template<typename T, size_t N>
+constexpr const T* nostl::vector<T, N>::data() const noexcept {
+	return this->m_data;
+}
 
 /**
  * Member access function.
@@ -841,7 +869,7 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(const nostl::vector<T, N>& o
 	// copy each element of other vector into this instance
 	for (size_t i = 0; i < other.m_size; i++) {
 		// Copy data from other vector into this vector.
-		// Use placement new for complex types so that the copy constructor is actually
+		// Use placement new for non-scalar types so that the copy constructor is actually
 		// called.
 		new(&this->m_data[i]) T(other.m_data[i]);
 	}
@@ -962,9 +990,6 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 #endif // NOSTL_VECTOR_H
 
 /** @todo implement proper type checking in constructors/assignment operations */
-/** @todo refactor: use iterators instead of regular loops */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */
-/** @todo construct from iterator range */
-/** @todo template argument deduction guide for iterator range constructor */
-/** @todo swap() function */
+/** @todo swap member function function */

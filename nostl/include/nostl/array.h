@@ -70,6 +70,7 @@ namespace nostl {
 		void fill(const_reference value = T());
 
 		inline constexpr size_type len() const noexcept;
+
 		inline constexpr bool empty() const noexcept;
 
 		constexpr pointer data() noexcept;
@@ -316,7 +317,7 @@ template<typename T, size_t N>
 inline constexpr size_t nostl::array<T, N>::len() const noexcept { return N; }
 
 /**
- * Returns whether the array is empty or not (N = 0).
+ * Checks whether the array is empty or not (N = 0).
 */
 template<typename T, size_t N>
 inline constexpr bool nostl::array<T, N>::empty() const noexcept { return !N; }
@@ -628,7 +629,5 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 
 #endif // NOSTL_ARRAY
 
-/** @todo fix constructors/assignment operations: UNFUCK ITERATORS */
 /** @todo swap member function */
-/** @todo refactor: either remove references to member types or use them everywher */
-/** @todo refactor: very similar and redundant code in constructors i'm too lazy to abstract */
+/** @todo refactor: either remove references to member types or use them everywhere */
