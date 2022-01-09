@@ -1053,9 +1053,9 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 
 #endif // NOSTL_VECTOR_H
 
-/** @todo implement proper type checking in constructors/assignment operations */
 /** @todo insert at arbitrary position function */
-/** @todo erase range function */
-/** @todo swap function */
+/** @todo add compare member function and comparison operator overloads */
 /** @todo replace casts with static_cast */
+/** @todo swap function */
+/** @todo erase range function */
 /** @todo improve doxygen documentation */

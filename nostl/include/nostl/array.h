@@ -105,6 +105,7 @@ namespace nostl {
 		reference operator[](size_type idx);
 
 		array<T, N>& operator=(const array<T, N>& other);
+		array<T, N>& operator=(const std::array<T, N>& other);
 		array<T, N>& operator=(array<T, N>&& other);
 	
 	}; // class array
@@ -510,6 +511,43 @@ nostl::array<T, N>& nostl::array<T, N>::operator=(const nostl::array<T, N>& othe
 }
 
 /**
+ * Copy assignment (from std::vector) operator overload.
+ * Copies the data from other into this instance. Old values will be destroyed.
+*/
+template<typename T, size_t N>
+nostl::array<T, N>& nostl::array<T, N>::operator=(const std::array<T, N>& other) {
+	// std::cout << "copy-assigning (from std::array) into instance\n";
+
+	// iterator type aliases
+	using itr_t = nostl::array<T, N>::iterator;
+	using citr_t = typename std::array<T, N>::const_iterator;
+
+	// Check if T is a primitive and copy data accordingly.
+	// For a comprehensible table of what is considered a scalar type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/>
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memcpy
+		if (this->m_data && other.data()) {
+			const size_t count = this->len() * sizeof (T); 	// bytes
+			std::memcpy(this->m_data, other.data(), count); // dst, src, byte count
+		}
+	} else {
+		// T is not a scalar, use copy constructor
+		// destroy old elements
+		this->seek_and_destroy();
+
+		// copy over elements from other array into this instance
+		itr_t i = this->begin();
+		citr_t j = other.begin();
+		while (i != this->end()) {
+			*i++ = *j++;
+		}
+	}
+
+	return *this;
+}
+
+/**
  * Move assignment operator overload.
  * Transfers the ownership of the other array's members into this instance. Old 
  * values will be lost
@@ -631,7 +669,6 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 
 /** @todo copy assignment operator (from std::array) */
 /** @todo add compare member function and comparison operator overloads */
-/** @todo swap function */
-/** @todo refactor: either remove references to member types or use them everywhere */
 /** @todo replace casts with static_cast */
+/** @todo swap function */
 /** @todo improve doxygen documentation */
