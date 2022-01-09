@@ -15,7 +15,7 @@
 
 // C library
 #include <cstddef> 	// size_t, ptrdiff_t
-#include <cstring> 	// std::memcpy
+#include <cstring> 	// std::memcpy, std::memmove, std::memset
 #include <cmath> 	// std::ceil
 #include <cassert> 	// assert macro
 
@@ -297,7 +297,7 @@ nostl::vector<T, N>::vector(const std::initializer_list<T>& ilist) :
 {
 	// std::cout << "constructing instance from initializer list\n";
 	
-	// iterator type alias
+	// iterator type aliases
 	using itr_t = typename std::initializer_list<T>::iterator;
 
 	// Allocate initial memory for m_data.
@@ -336,7 +336,7 @@ nostl::vector<T, N>::vector(const nostl::vector<T, N>& other) :
 	if (std::is_scalar<T>::value) {
 		// T is a scalar, use std::memcpy
 		if (this->m_data && other.data()) {
-			const size_t count = this->len() * sizeof (T); 	// bytes
+			const size_t count = other.memsize(); 			// bytes
 			std::memcpy(this->m_data, other.data(), count); // dst, src, byte count
 		}
 	} else {
@@ -348,7 +348,6 @@ nostl::vector<T, N>::vector(const nostl::vector<T, N>& other) :
 			new(&this->m_data[i]) T(other.m_data[i]);
 		}
 	}
-
 	this->m_size = other.m_size; // set new size
 }
 
@@ -372,12 +371,20 @@ nostl::vector<T, N>::vector(const std::vector<T>& other) :
 	// no data will be copied into this new array, copying is done here instead.
 	this->resize(std::max(N, other.size()));
 
-	// copy each element of other std::vector into this instance
-	for (size_t i = 0; i < other.size(); i++) {
-		// Copy data from other std::vector into this vector.
-		// Use placement new for non-scalar types so that the copy constructor is actually
-		// called.
-		new(&this->m_data[i]) T(other[i]);
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memcpy
+		if (this->m_data && other.data()) {
+			const size_t count = other.size() * sizeof (T); // bytes
+			std::memcpy(this->m_data, other.data(), count); // dst, src, byte count
+		}
+	} else {
+		// T is not a scalar, use copy constructor
+		for (size_t i = 0; i < other.len(); ++i) {
+			// Copy data from other vector into this vector.
+			// Use placement new for non-scalar types so that the copy constructor is actually 
+			// called.
+			new(&this->m_data[i]) T(other[i]);
+		}
 	}
 	this->m_size = other.size(); // set new size
 }
@@ -409,15 +416,16 @@ template<typename T, size_t N>
 nostl::vector<T, N>::~vector() {
 	// std::cout << "destroying instance\n";
 
-	// clear vector by called the destructor for each element
+	// clear vector by calling the destructor of each element
 	this->clear();
 
 	// deallocate raw memory block without calling any destructors
 	::operator delete(this->m_data, this->m_capacity);
 
-	// leave this in an "empty" state, unecessary cleanup of resources about to be returned to the system but w/e
+	// leave this in an "empty" state
 	this->m_data = nullptr;
 	this->m_size = this->m_capacity = 0;
+	this->m_mem_policy = nostl::policy_flags::NORMAL;
 }
 
 /********** Public Member Function Definitions **********/
@@ -446,7 +454,7 @@ void nostl::vector<T, N>::resize(size_t new_capacity) {
 
 	// Allocate raw memory block (we back to malloc bois)
 	// By calling ::operator new(), no construtors will be called.
-	T* new_block = (T*)::operator new(sizeof (T) * new_capacity);
+	T* new_block = static_cast<T*>(::operator new(sizeof (T) * new_capacity));
 
 	// Update m_size if new capacity is smaller than it, save a copy of original size.
 	// Causes only up to new_capacity elements to be copied if shrinking array, 
@@ -862,19 +870,29 @@ template<typename T, size_t N>
 nostl::vector<T, N>& nostl::vector<T, N>::operator=(const nostl::vector<T, N>& other) {
 	// std::cout << "copy-assigning into instance\n";
 
+	// set new capacity expansion policy
+	this->m_mem_policy = other.m_mem_policy;
+
 	// discard old data and resize this vector to fit contents of other vector
 	this->clear();
 	this->resize(std::max(N, other.m_size));
 
-	// copy each element of other vector into this instance
-	for (size_t i = 0; i < other.m_size; i++) {
-		// Copy data from other vector into this vector.
-		// Use placement new for non-scalar types so that the copy constructor is actually
-		// called.
-		new(&this->m_data[i]) T(other.m_data[i]);
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memcpy
+		if (this->m_data && other.data()) {
+			const size_t count = other.memsize(); 			// bytes
+			std::memcpy(this->m_data, other.data(), count); // dst, src, byte count
+		}
+	} else {
+		// T is not a scalar, use copy constructor
+		for (size_t i = 0; i < other.len(); ++i) {
+			// Copy data from other vector into this vector.
+			// Use placement new for non-scalar types so that the copy constructor is actually 
+			// called.
+			new(&this->m_data[i]) T(other.m_data[i]);
+		}
 	}
-	this->m_size = other.m_size; 				// set new size
-	this->m_mem_policy = other.m_mem_policy; 	// set new capacity expansion policy
+	this->m_size = other.m_size; // set new size
 
 	return *this;
 }
@@ -989,7 +1007,11 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 
 #endif // NOSTL_VECTOR_H
 
+/** @todo use vector::emplace_back in copy constructors and copy assignment operators */
+/** @todo copy assignment operator (from std::vector) */
 /** @todo implement proper type checking in constructors/assignment operations */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */
-/** @todo swap member function function */
+/** @todo swap function */
+/** @todo replace casts with static_cast */
+/** @todo improve doxygen documentation */

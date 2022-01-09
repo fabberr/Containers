@@ -165,7 +165,7 @@ nostl::array<T, N>::array(const std::initializer_list<T>& ilist) {
 		// move
 		size_t count = ilist.size() * sizeof(T); 	// bytes
 		const inititr_t src = ilist.begin(); 		// initializer_list<_E>::iterator is _E*
-		if (this->m_data && src) {
+		if (this->m_data && src) { 					// nullptr check
 			std::memmove(this->m_data, src, count); // dst, src, byte count
 		}
 		
@@ -629,5 +629,9 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 
 #endif // NOSTL_ARRAY
 
-/** @todo swap member function */
+/** @todo copy assignment operator (from std::array) */
+/** @todo add compare member function and comparison operator overloads */
+/** @todo swap function */
 /** @todo refactor: either remove references to member types or use them everywhere */
+/** @todo replace casts with static_cast */
+/** @todo improve doxygen documentation */

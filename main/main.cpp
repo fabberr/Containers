@@ -40,9 +40,15 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 	);
 }
 
-/********** Main Entry Point **********/
-
-int main() {
+/**
+ * Unit test: constructors and assignment operations.
+ * >initializer list constructor
+ * >copy constructor
+ * >move constructor
+ * >copy assignment
+ * >move assignment
+*/
+void test_constructors_and_assignment_operations() {
 
 	// array type alias
 	using arr_t = nostl::vector<std::string, 10>;
@@ -83,9 +89,15 @@ int main() {
 	arr_t move_assigned = std::move(copy_assigned);
 	std::cout << "copy_assigned: " << copy_assigned << '\n'; 		// copy_assigned: []
 	std::cout << "move_assigned: " << move_assigned << std::endl; 	// move_assigned: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+}
 
+/********** Main Entry Point **********/
+
+int main() {
+	test_constructors_and_assignment_operations();
 	return 0;
 }
 
 /** @todo REMOVE ITERATORS AND REWIRITE THAT FUCKING MESS FROM SCRATCH */
+/** @todo lrn2 unit test using CMake */
 /** @todo C++20 modules maybe */
