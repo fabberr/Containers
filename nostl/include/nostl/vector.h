@@ -333,9 +333,12 @@ nostl::vector<T, N>::vector(const nostl::vector<T, N>& other) :
 	// no data will be copied into this new array, copying is done here instead.
 	this->resize(std::max(N, other.m_size));
 
+	// Check if T is a primitive and copy data accordingly.
+	// For a comprehensible table of what is considered a scalar type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/>
 	if (std::is_scalar<T>::value) {
 		// T is a scalar, use std::memcpy
-		if (this->m_data && other.data()) {
+		if (this->m_data && other.data()) { 				// nullptr checks
 			const size_t count = other.memsize(); 			// bytes
 			std::memcpy(this->m_data, other.data(), count); // dst, src, byte count
 		}
@@ -371,9 +374,12 @@ nostl::vector<T, N>::vector(const std::vector<T>& other) :
 	// no data will be copied into this new array, copying is done here instead.
 	this->resize(std::max(N, other.size()));
 
+	// Check if T is a primitive and copy data accordingly.
+	// For a comprehensible table of what is considered a scalar type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/>
 	if (std::is_scalar<T>::value) {
 		// T is a scalar, use std::memcpy
-		if (this->m_data && other.data()) {
+		if (this->m_data && other.data()) { 				// nullptr checks
 			const size_t count = other.size() * sizeof (T); // bytes
 			std::memcpy(this->m_data, other.data(), count); // dst, src, byte count
 		}
@@ -878,9 +884,12 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(const nostl::vector<T, N>& o
 	this->clear();
 	this->resize(std::max(N, other.m_size));
 
+	// Check if T is a primitive and copy data accordingly.
+	// For a comprehensible table of what is considered a scalar type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/>
 	if (std::is_scalar<T>::value) {
 		// T is a scalar, use std::memcpy
-		if (this->m_data && other.data()) {
+		if (this->m_data && other.data()) { 				// nullptr checks
 			const size_t count = other.memsize(); 			// bytes
 			std::memcpy(this->m_data, other.data(), count); // dst, src, byte count
 		}
