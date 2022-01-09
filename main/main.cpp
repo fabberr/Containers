@@ -100,4 +100,4 @@ int main() {
 
 /** @todo REMOVE ITERATORS AND REWIRITE THAT FUCKING MESS FROM SCRATCH */
 /** @todo lrn2 unit test using CMake */
-/** @todo C++20 modules maybe */
+/** @todo convert header files into C++20 modules maybe */
