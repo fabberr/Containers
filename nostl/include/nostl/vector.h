@@ -465,15 +465,16 @@ void nostl::vector<T, N>::resize(size_t new_capacity) {
 	}
 	
 	// Check if T is a primitive and copy data accordingly.
-	// For a comprehensible table of what is considered a fundamental type, see: 
-	// <https://www.cplusplus.com/reference/type_traits/is_fundamental/>
-	if (std::is_fundamental<T>::value) {
-		// T is of an fundamental type, use std::memcpy
-		if (this->m_data) {
-			std::memcpy(new_block, this->m_data, sizeof (T) * this->m_size);
+	// For a comprehensible table of what is considered a scalar type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/>
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memcpy
+		if (this->m_data) { 								// nullptr check
+			const size_t count = this->m_size * sizeof (T); // bytes
+			std::memcpy(new_block, this->m_data, count); 	// dst, src, byte count
 		}
 	} else {
-		// T is not of an fundamental type, call move constructor for each element
+		// T is not a scalar, use move constructor
 		for (size_t i = 0; i < this->m_size; i++) {
 			// Move each element into the new block.
 			// Use placement new for non-scalar types so that the constructor is actually 
