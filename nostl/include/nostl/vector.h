@@ -207,6 +207,7 @@ namespace nostl {
 		vector& operator+=(T&& elem);
 
 		vector& operator=(const vector& other);
+		vector& operator=(const std::vector<T>& other);
 		vector& operator=(vector&& other);
 
 	}; // class vector
@@ -385,7 +386,7 @@ nostl::vector<T, N>::vector(const std::vector<T>& other) :
 		}
 	} else {
 		// T is not a scalar, use copy constructor
-		for (size_t i = 0; i < other.len(); ++i) {
+		for (size_t i = 0; i < other.size(); ++i) {
 			// Copy data from other vector into this vector.
 			// Use placement new for non-scalar types so that the copy constructor is actually 
 			// called.
@@ -799,8 +800,8 @@ nostl::policy_flags nostl::vector<T, N>::policy_flags(const nostl::policy_flags&
 */
 template<typename T, size_t N>
 const nostl::policy_flags& nostl::vector<T, N>::toggle_restrictive() {
-	this->m_mem_policy = ~this->m_mem_policy;
-	return this->m_mem_policy;
+	this->m_mem_policy = ~this->m_mem_policy; 	// toggle behavior
+	return this->m_mem_policy; 					// return new behavior
 }
 
 /********** Private Member Function Definitions **********/
@@ -903,6 +904,41 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(const nostl::vector<T, N>& o
 		}
 	}
 	this->m_size = other.m_size; // set new size
+
+	return *this;
+}
+
+/**
+ * Copy assignment (from std::vector) operator overload.
+ * Copies the data from other into this instance. Old values will be destroyed.
+*/
+template<typename T, size_t N>
+nostl::vector<T, N>& nostl::vector<T, N>::operator=(const std::vector<T>& other) {
+	// std::cout << "copy-assigning (from std::vector) into instance\n";
+
+	// discard old data and resize this vector to fit contents of other vector
+	this->clear();
+	this->resize(std::max(N, other.size()));
+
+	// Check if T is a primitive and copy data accordingly.
+	// For a comprehensible table of what is considered a scalar type, see: 
+	// <https://www.cplusplus.com/reference/type_traits/>
+	if (std::is_scalar<T>::value) {
+		// T is a scalar, use std::memcpy
+		if (this->m_data && other.data()) { 				// nullptr checks
+			const size_t count = other.size() * sizeof (T); // bytes
+			std::memcpy(this->m_data, other.data(), count); // dst, src, byte count
+		}
+	} else {
+		// T is not a scalar, use copy constructor
+		for (size_t i = 0; i < other.size(); ++i) {
+			// Copy data from other vector into this vector.
+			// Use placement new for non-scalar types so that the copy constructor is actually 
+			// called.
+			new(&this->m_data[i]) T(other[i]);
+		}
+	}
+	this->m_size = other.size(); // set new size
 
 	return *this;
 }
@@ -1017,8 +1053,6 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 
 #endif // NOSTL_VECTOR_H
 
-/** @todo use vector::emplace_back in copy constructors and copy assignment operators */
-/** @todo copy assignment operator (from std::vector) */
 /** @todo implement proper type checking in constructors/assignment operations */
 /** @todo insert at arbitrary position function */
 /** @todo erase range function */

@@ -41,7 +41,35 @@ void print_vec_stats(const nostl::vector<T, N>& vec) {
 }
 
 /**
- * Unit test: constructors and assignment operations.
+ * Stream insertion operator overload for std::string specialization of 
+ * std::vector.
+*/
+std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& rhs) {
+
+	// iterator type alias
+	using itr_t = typename std::vector<std::string>::const_iterator;
+
+	// begin vector
+	os << "[";
+
+	// iterate through vector, inserting each string
+	for (itr_t it = rhs.begin(); it != rhs.end(); ++it) {
+		// insert currrent string, followed by a comma if not last element
+		os << '\"' << *it << '\"';
+		if ((it + 1) != rhs.end()) {
+			os << ", ";
+		}
+	}
+
+	// end vector
+	os << "]";
+
+	// return reference to output stream
+	return os;
+}
+
+/**
+ * """Unit Test""": constructors and assignment operations.
  * >initializer list constructor
  * >copy constructor
  * >move constructor
@@ -57,10 +85,9 @@ void test_constructors_and_assignment_operations() {
 	using namespace std::string_literals;
 
 	// testing initializer list constructor
-	std::cout << "--------------------\n";
 	std::cout << "constructing base object...\n";
 	const arr_t base{ "0"s, "1"s, "2"s, "3"s, "4"s, "5"s, "6"s, "7"s, "8"s, "9"s };
-	std::cout << "base: " << base << std::endl; 						// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+	std::cout << "base: " << base << '\n'; 								// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 	// testing copy constructor
 	std::cout << "--------------------\n";
@@ -79,22 +106,58 @@ void test_constructors_and_assignment_operations() {
 	// testing copy assignment operation
 	std::cout << "--------------------\n";
 	std::cout << "copying base into copy_assigned...\n";
-	arr_t copy_assigned = base;
+	arr_t copy_assigned;
+	copy_assigned = base;
 	std::cout << "base: " << base << '\n'; 							// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 	std::cout << "copy_assigned: " << copy_assigned << std::endl; 	// copy_assigned: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 	// testing move assignment operation
 	std::cout << "--------------------\n";
 	std::cout << "moving copy_assigned into move_assigned...\n";
-	arr_t move_assigned = std::move(copy_assigned);
+	arr_t move_assigned;
+	move_assigned = std::move(copy_assigned);
 	std::cout << "copy_assigned: " << copy_assigned << '\n'; 		// copy_assigned: []
 	std::cout << "move_assigned: " << move_assigned << std::endl; 	// move_assigned: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+}
+
+/**
+ * """Unit Test""": constructors and assignment operations from std::vectors
+ * >copy constructor
+ * >copy assignment
+*/
+void test_constructors_and_assignment_operations_std() {
+
+	// array type alias
+	using arr_t = nostl::vector<std::string, 10>;
+
+	// access to std::string literals
+	using namespace std::string_literals;
+
+	// testing initializer list constructor
+	std::cout << "constructing base object...\n";
+	const std::vector<std::string> base{ "0"s, "1"s, "2"s, "3"s, "4"s, "5"s, "6"s, "7"s, "8"s, "9"s };
+	std::cout << "base: " << base << '\n'; 								// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+	// testing copy constructor
+	std::cout << "--------------------\n";
+	std::cout << "copying base into copy_constructed...\n";
+	arr_t copy_constructed{base};
+	std::cout << "base: " << base << '\n'; 								// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+	std::cout << "copy_constructed: " << copy_constructed << std::endl; // copy_constructed: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+	// testing copy assignment operation
+	std::cout << "--------------------\n";
+	std::cout << "copying base into copy_assigned...\n";
+	arr_t copy_assigned;
+	copy_assigned = base;
+	std::cout << "base: " << base << '\n'; 							// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+	std::cout << "copy_assigned: " << copy_assigned << std::endl; 	// copy_assigned: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 }
 
 /********** Main Entry Point **********/
 
 int main() {
-	test_constructors_and_assignment_operations();
+	test_constructors_and_assignment_operations_std();
 	return 0;
 }
 
