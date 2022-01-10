@@ -166,7 +166,8 @@ void test_compare_vector() {
 	using itr_t = vec_t::iterator;
 
 	// insert boolean values into atandard character output
-	std::cout << std::boolalpha;
+	const auto& fmtflags = std::cout.flags(); 	// save format control flags
+	std::cout << std::boolalpha; 				// sets boolapha flag for std::cout
 
 	// testing operator==
 	vec_t v1{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -181,8 +182,11 @@ void test_compare_vector() {
 		v3 += *(it - 1);
 	}
 	std::cout << "----------------------------------------\n";
+	std::cout << "v1: " << v1 << '\n'; // v1: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 	std::cout << "v3: " << v3 << '\n'; // v3: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
 	std::cout << "comparing v1 and v3: match=" << !(v3 != v1) << std::endl;
+
+	std::cout.flags(fmtflags); // restore format control flags
 }
 
 /********** Main Entry Point **********/
@@ -192,6 +196,5 @@ int main() {
 	return 0;
 }
 
-/** @todo REMOVE ITERATORS AND REWRITE THAT FUCKING MESS FROM SCRATCH */
 /** @todo lrn2 unit test using CMake */
 /** @todo convert header files into C++20 modules maybe */

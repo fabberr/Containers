@@ -983,17 +983,21 @@ bool
 operator==(
 	const nostl::vector<T, N>& lhs, 
 	const nostl::vector<T, N>& rhs
-) { 
-	// check if (sizes AND contents) are equal
+) {
+	// return true if (sizes AND contents) are equal
 	return (
-		lhs.len() == rhs.len() &&
-		std::equal(lhs.begin().get_ptr(), lhs.end().get_ptr(), rhs.begin().get_ptr()) /* using raw pointers as a workaround to make use of std::equal possible */
+		lhs.len() == rhs.len() &&	// checks if sizes match
+		std::equal(					// checks if contents match
+			lhs.begin().get_ptr(),		// first1: 	begin of first range
+			lhs.end().get_ptr(), 		// last1: 	end of first range
+			rhs.begin().get_ptr() 		// first2: 	begin of second range, checks up until first2 + (last1 - first1) is reached or the contents mismatch
+		) // using raw pointers as a workaround to make use of std::equal possible as my iterator implementation doesn't provide the traits required in std::equal
 	);
 }
 
 /**
  * operator!= overload. Compares two vectors.
- * Checks to see if the vectors are not equal.
+ * Checks to see if the vectors are not equal. Based on operator==.
 */
 template<typename T, size_t N>
 inline constexpr 
