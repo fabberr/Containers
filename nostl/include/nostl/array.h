@@ -667,7 +667,6 @@ std::ostream& operator<<(std::ostream& os, const nostl::array<std::string, N>& r
 
 #endif // NOSTL_ARRAY
 
-/** @todo copy assignment operator (from std::array) */
 /** @todo add compare member function and comparison operator overloads */
 /** @todo replace casts with static_cast */
 /** @todo swap function */
