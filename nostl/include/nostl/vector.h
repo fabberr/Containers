@@ -10,7 +10,7 @@
 #include <type_traits> 		// std::is_fundamental, std::is_pointer, std::is_member_pointer, std::is_scalar
 #include <utility> 			// std::move, std::forward
 #include <initializer_list> // std::initializer_list
-#include <algorithm> 		// std::max
+#include <algorithm> 		// std::max, std::equal
 #include <functional> 		// std::function
 
 // C library
@@ -974,6 +974,36 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(nostl::vector<T, N>&& other)
 /********** Free Functions **********/
 
 /**
+ * operator== overload. Compares two vectors.
+ * Checks to see if the vectors are equal.
+*/
+template<typename T, size_t N>
+inline constexpr 
+bool 
+operator==(
+	const nostl::vector<T, N>& lhs, 
+	const nostl::vector<T, N>& rhs
+) { 
+	// check if (sizes AND contents) are equal
+	return (
+		lhs.len() == rhs.len() &&
+		std::equal(lhs.begin().get_ptr(), lhs.end().get_ptr(), rhs.begin().get_ptr()) /* using raw pointers as a workaround to make use of std::equal possible */
+	);
+}
+
+/**
+ * operator!= overload. Compares two vectors.
+ * Checks to see if the vectors are not equal.
+*/
+template<typename T, size_t N>
+inline constexpr 
+bool 
+operator!=(
+	const nostl::vector<T, N>& lhs, 
+	const nostl::vector<T, N>& rhs
+) { return !(lhs == rhs); }
+
+/**
  * Default stream insertion operator overload for generic specialization.
 */
 template<typename T, size_t N>
@@ -1054,7 +1084,6 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 #endif // NOSTL_VECTOR_H
 
 /** @todo insert at arbitrary position function */
-/** @todo add compare member function and comparison operator overloads */
 /** @todo replace casts with static_cast */
 /** @todo swap function */
 /** @todo erase range function */

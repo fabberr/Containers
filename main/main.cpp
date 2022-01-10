@@ -92,14 +92,14 @@ void test_constructors_and_assignment_operations() {
 	// testing copy constructor
 	std::cout << "--------------------\n";
 	std::cout << "copying base into copy_constructed...\n";
-	arr_t copy_constructed{base};
+	arr_t copy_constructed(base);
 	std::cout << "base: " << base << '\n'; 								// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 	std::cout << "copy_constructed: " << copy_constructed << std::endl; // copy_constructed: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 	// testing move constructor
 	std::cout << "--------------------\n";
 	std::cout << "moving copy_constructed into move_contructed...\n";
-	arr_t move_constructed{std::move(copy_constructed)};
+	arr_t move_constructed(std::move(copy_constructed));
 	std::cout << "copy_constructed: " << copy_constructed << '\n'; 		// copy_constructed: []
 	std::cout << "move_constructed: " << move_constructed << std::endl; // move_constructed: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
@@ -141,7 +141,7 @@ void test_constructors_and_assignment_operations_std() {
 	// testing copy constructor
 	std::cout << "--------------------\n";
 	std::cout << "copying base into copy_constructed...\n";
-	arr_t copy_constructed{base};
+	arr_t copy_constructed(base);
 	std::cout << "base: " << base << '\n'; 								// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 	std::cout << "copy_constructed: " << copy_constructed << std::endl; // copy_constructed: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
@@ -154,10 +154,41 @@ void test_constructors_and_assignment_operations_std() {
 	std::cout << "copy_assigned: " << copy_assigned << std::endl; 	// copy_assigned: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 }
 
+/**
+ * """Unit Test""": comparison operator overloads
+ * >operator==
+ * >operator!=
+*/
+void test_compare_vector() {
+
+	// type aliases
+	using vec_t = nostl::vector<int>;
+	using itr_t = vec_t::iterator;
+
+	// insert boolean values into atandard character output
+	std::cout << std::boolalpha;
+
+	// testing operator==
+	vec_t v1{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	vec_t v2(v1);
+	std::cout << "v1: " << v1 << '\n'; // v1: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+	std::cout << "v2: " << v2 << '\n'; // v2: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+	std::cout << "comparing v1 and v2: match=" << (v1 == v2) << std::endl;
+
+	// testing operator!=
+	vec_t v3; // inverse of v1
+	for (itr_t it = v1.end(); it != v1.begin(); --it) {
+		v3 += *(it - 1);
+	}
+	std::cout << "----------------------------------------\n";
+	std::cout << "v3: " << v3 << '\n'; // v3: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+	std::cout << "comparing v1 and v3: match=" << !(v3 != v1) << std::endl;
+}
+
 /********** Main Entry Point **********/
 
 int main() {
-	test_constructors_and_assignment_operations_std();
+	test_compare_vector();
 	return 0;
 }
 
