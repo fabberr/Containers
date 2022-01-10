@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21.4)
 
 # Set project name
-project(NoSTL)
+project(NonSTDContainers)
 
 # Add subdirectories
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/nostl") 	# project: libnostl (library)
