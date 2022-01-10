@@ -54,7 +54,7 @@ namespace nostl {
 		/**
 		 * Returns a const pointer to the current element referenced by the iterator.
 		*/
-		const pointer get_ptr() const { return this->m_ptr; }
+		const pointer data() const { return this->m_ptr; }
 
 	public:
 		/********** Increment and Decrement Operators **********/

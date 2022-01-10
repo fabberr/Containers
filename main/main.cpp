@@ -165,7 +165,7 @@ void test_compare_vector() {
 	using vec_t = nostl::vector<int>;
 	using itr_t = vec_t::iterator;
 
-	// insert boolean values into atandard character output
+	// insert boolean values into standard character output
 	const auto& fmtflags = std::cout.flags(); 	// save format control flags
 	std::cout << std::boolalpha; 				// sets boolapha flag for std::cout
 

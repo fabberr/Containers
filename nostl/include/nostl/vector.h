@@ -976,6 +976,11 @@ nostl::vector<T, N>& nostl::vector<T, N>::operator=(nostl::vector<T, N>&& other)
 /**
  * operator== overload. Compares two vectors.
  * Checks to see if the vectors are equal.
+ * 
+ * @param lhs [in] Left-hand side of expression.
+ * @param rhs [in] Right-hand side of expression.
+ * 
+ * @returns true if both sizes and contents match, false otherwise.
 */
 template<typename T, size_t N>
 inline constexpr 
@@ -984,13 +989,13 @@ operator==(
 	const nostl::vector<T, N>& lhs, 
 	const nostl::vector<T, N>& rhs
 ) {
-	// return true if (sizes AND contents) are equal
+	// returns true if sizes and contents match
 	return (
 		lhs.len() == rhs.len() &&	// checks if sizes match
 		std::equal(					// checks if contents match
-			lhs.begin().get_ptr(),		// first1: 	begin of first range
-			lhs.end().get_ptr(), 		// last1: 	end of first range
-			rhs.begin().get_ptr() 		// first2: 	begin of second range, checks up until first2 + (last1 - first1) is reached or the contents mismatch
+			lhs.begin().data(),		// first1: 	begin of first range
+			lhs.end().data(), 		// last1: 	end of first range
+			rhs.begin().data() 		// first2: 	begin of second range, checks up until first2 + (last1 - first1) is reached or the contents mismatch
 		) // using raw pointers as a workaround to make use of std::equal possible as my iterator implementation doesn't provide the traits required in std::equal
 	);
 }
@@ -998,6 +1003,11 @@ operator==(
 /**
  * operator!= overload. Compares two vectors.
  * Checks to see if the vectors are not equal. Based on operator==.
+ * 
+ * @param lhs [in] Left-hand side of expression.
+ * @param rhs [in] Right-hand side of expression.
+ * 
+ * @returns false if both sizes and contents match, true otherwise.
 */
 template<typename T, size_t N>
 inline constexpr 
@@ -1043,7 +1053,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<T, N>& rhs) {
 		ostream_insert(it);
 		os << ", ";
 	}
-	if (it.get_ptr()) {
+	if (it.data()) {
 		ostream_insert(it); // insert last element
 	}
 
@@ -1072,7 +1082,7 @@ std::ostream& operator<<(std::ostream& os, const nostl::vector<std::string, N>& 
 		// insert currrent string, followed by a comma
 		os << '\"' << *it << '\"' << ", ";
 	}
-	if (it.get_ptr()) {
+	if (it.data()) {
 		os << '\"' << *it << '\"'; // insert last string
 	}
 
