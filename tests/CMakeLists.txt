@@ -6,8 +6,8 @@ add_executable(${PROJECT_NAME} ./src/main.cpp ./src/unit_tests.cpp)
 
 # Setting the target's properties
 set_target_properties(
-	${PROJECT_NAME} PROPERTIES # Setting properties for ´tests´ target
-	CXX_STANDARD 20	# Set the target's C++ standard to C++ 20
+	${PROJECT_NAME} PROPERTIES 	# Setting properties for ´tests´ target
+	CXX_STANDARD 20				# Set the target's C++ standard to C++ 20
 )
 
 # Link libraries to target executable
