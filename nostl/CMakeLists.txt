@@ -8,7 +8,7 @@ add_library(
 
 # Setting the target's properties
 set_target_properties(
-	nostl PROPERTIES 		# Setting properties for nostl target
+	nostl PROPERTIES 		# Setting properties for `nostl` target
 	LINKER_LANGUAGE CXX 	# Set the target's language to C++
 	CXX_STANDARD 20 		# Set the target's C++ standard to C++ 20
 )

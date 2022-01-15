@@ -5,4 +5,4 @@ project(Containers)
 
 # Add subdirectories
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/nostl") 	# target: libnostl (library)
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/main") 	# target: main (executable)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/demo") 	# target: demo (executable)
