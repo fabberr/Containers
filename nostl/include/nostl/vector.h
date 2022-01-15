@@ -989,13 +989,13 @@ operator==(
 	const nostl::vector<T, N>& lhs, 
 	const nostl::vector<T, N>& rhs
 ) {
-	// returns true if sizes and contents match
+	// returns true if both sizes and contents match
 	return (
-		lhs.len() == rhs.len() &&	// checks if sizes match
-		std::equal(					// checks if contents match
+		lhs.len() == rhs.len() 	// checks if sizes match
+		&& std::equal(			// checks if contents match
 			lhs.begin().data(),		// first1: 	begin of first range
 			lhs.end().data(), 		// last1: 	end of first range
-			rhs.begin().data() 		// first2: 	begin of second range, checks up until first2 + (last1 - first1) is reached or the contents mismatch
+			rhs.begin().data() 		// first2: 	begin of second range, checks up until first2 + (last1 - first1) address is reached or the contents mismatch
 		) // using raw pointers as a workaround to make use of std::equal possible as my iterator implementation doesn't provide the traits required in std::equal
 	);
 }

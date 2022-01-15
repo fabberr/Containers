@@ -1,5 +1,5 @@
 # Create executable target
-add_executable(main main.cpp)
+add_executable(main ./src/main.cpp)
 
 # Set the target's C++ standard
 set_property(TARGET main PROPERTY CXX_STANDARD 17)

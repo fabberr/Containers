@@ -16,7 +16,7 @@
 /********** Functions **********/
 
 /**
- * Prints the contents of a nostl::vector along with information about it's 
+ * Prints the contents of a nostl::vector along with information about its 
  * memory footprint to the standard character output.
 */
 template<typename T, size_t N>
@@ -136,22 +136,22 @@ void test_constructors_and_assignment_operations_std() {
 	// testing initializer list constructor
 	std::cout << "constructing base object...\n";
 	const std::vector<std::string> base{ "0"s, "1"s, "2"s, "3"s, "4"s, "5"s, "6"s, "7"s, "8"s, "9"s };
-	std::cout << "base: " << base << '\n'; 								// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+	std::cout << "base: " << base << std::endl;							// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 	// testing copy constructor
-	std::cout << "--------------------\n";
+	std::cout << "--------------------------------------------------------------------------------\n";
 	std::cout << "copying base into copy_constructed...\n";
 	arr_t copy_constructed(base);
 	std::cout << "base: " << base << '\n'; 								// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 	std::cout << "copy_constructed: " << copy_constructed << std::endl; // copy_constructed: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 	// testing copy assignment operation
-	std::cout << "--------------------\n";
+	std::cout << "--------------------------------------------------------------------------------\n";
 	std::cout << "copying base into copy_assigned...\n";
 	arr_t copy_assigned;
 	copy_assigned = base;
-	std::cout << "base: " << base << '\n'; 							// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-	std::cout << "copy_assigned: " << copy_assigned << std::endl; 	// copy_assigned: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+	std::cout << "base: " << base << '\n'; 								// base: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+	std::cout << "copy_assigned: " << copy_assigned << std::endl; 		// copy_assigned: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 }
 
 /**
@@ -181,7 +181,7 @@ void test_compare_vector() {
 	for (itr_t it = v1.end(); it != v1.begin(); --it) {
 		v3 += *(it - 1);
 	}
-	std::cout << "----------------------------------------\n";
+	std::cout << "--------------------------------------------------------------------------------\n";
 	std::cout << "v1: " << v1 << '\n'; // v1: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 	std::cout << "v3: " << v3 << '\n'; // v3: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
 	std::cout << "comparing v1 and v3: match=" << !(v3 != v1) << std::endl;
@@ -192,7 +192,8 @@ void test_compare_vector() {
 /********** Main Entry Point **********/
 
 int main() {
-	test_compare_vector();
+	// test_constructors_and_assignment_operations();
+	test_constructors_and_assignment_operations_std();
 	return 0;
 }
 
