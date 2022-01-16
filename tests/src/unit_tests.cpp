@@ -76,7 +76,7 @@ int test::vector::constructors_and_assignment_operations() {
 }
 
 /**
- * arg: std_constructors
+ * arg: std-constructors
  * Unit Test: constructors and assignment (from std::vector) operations.
  *   - copy (from std::vector) constructor
  *   - copy (from std::vector) assignment
