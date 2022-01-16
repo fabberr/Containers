@@ -12,7 +12,6 @@ int main(int argc, char* argv[]) {
 	test::vector::constructors_and_assignment_operations();
 	// test::vector::constructors_and_assignment_operations_std();
 	// test::vector::compare();
-	std::cout << "IWTCITS" << std::endl;
 	return 0;
 }
 

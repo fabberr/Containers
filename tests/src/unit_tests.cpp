@@ -12,37 +12,8 @@
 #include <nostl/array.h> 	// nostl::array
 
 // internal
-// #include "../include/util.h" 		// declarations of utility functions
+#include "../include/util.h" 		// declarations for utility functions
 #include "../include/unit_tests.h" 	// declarations of test functions
-
-/**
-/**
- * Stream insertion operator overload for std::string specialization of 
- * std::vector.
-*/
-std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& rhs) {
-
-	// iterator type alias
-	using itr_t = typename std::vector<std::string>::const_iterator;
-
-	// begin vector
-	os << "[";
-
-	// iterate through vector, inserting each string
-	for (itr_t it = rhs.begin(); it != rhs.end(); ++it) {
-		// insert currrent string, followed by a comma if not last element
-		os << '\"' << *it << '\"';
-		if ((it + 1) != rhs.end()) {
-			os << ", ";
-		}
-	}
-
-	// end vector
-	os << "]";
-
-	// return reference to output stream
-	return os;
-}
 
 /********** Unit Tests (definition) **********/
 

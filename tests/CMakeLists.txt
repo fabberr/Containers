@@ -6,6 +6,7 @@ add_executable(
 	${PROJECT_NAME} 
 	./src/main.cpp 
 	./src/unit_tests.cpp
+	./src/util.cpp
 )
 
 # Setting the target's properties
