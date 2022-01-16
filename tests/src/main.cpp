@@ -55,7 +55,8 @@ void help(const char* argv[]) {
 		"  --usage, --help, -h, -?:\n"
 		"    Displays this help message.\n"
 		"  --list:\n"
-		"    Dumps a list of available containers and their respective tests." 
+		"    Dumps a list of available containers and their respective tests to standard\n"
+		"    character output." 
 	<< std::endl;
 }
 
@@ -107,13 +108,10 @@ void parse(int argc, const char* argv[]) {
 
 int main(int argc, char* argv[]) {
 
-	// parse cmd line args, resolves which test to run
+	// parse cmd line args and runs the desired test, if no test was resolved from the args the program exits with code -1
 	parse(argc, (const char**)argv);
 
-	// run unit test (if any was resolved) and return its value as exit code
-	// if(run_test) return run_test();
-
-	// if this point was reached, the parser could not resolve which test to run, return error code
+	// unreachable code, execution shouldn't be able to reach this line, but if it does: return error code
 	return -1;
 }
 
