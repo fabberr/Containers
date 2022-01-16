@@ -12,35 +12,10 @@
 #include <nostl/array.h> 	// nostl::array
 
 // internal
-#include "../include/unit_tests.h" // test function declarations
-
-/********** Functions **********/
+// #include "../include/util.h" 		// declarations of utility functions
+#include "../include/unit_tests.h" 	// declarations of test functions
 
 /**
- * Prints the contents of a nostl::vector along with information about its 
- * memory footprint to the standard character output.
-*/
-template<typename T, size_t N>
-void print_vec_stats(const nostl::vector<T, N>& vec) {
-	
-	// print vector
-	std::cout << vec << std::endl;
-	
-	// print memory usage information
-	std::printf(
-		"  len=%d elements, capacity=%d elements, elem_size=%d bytes\n", 
-		vec.len(), 
-		vec.capacity(), 
-		sizeof (T)
-	);
-	std::printf(
-		"  mem_usage=%d bytes, total_allocated_mem=%d bytes, unused_mem=%d bytes\n", 
-		vec.memsize(), 
-		vec.allocsize(), 
-		vec.allocsize() - vec.memsize()
-	);
-}
-
 /**
  * Stream insertion operator overload for std::string specialization of 
  * std::vector.
@@ -81,7 +56,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& rhs) 
  * 
  * returns 0 if test succeeds, otherwise, a negative value.
 */
-int test::constructors_and_assignment_operations() {
+int test::vector::constructors_and_assignment_operations() {
 
 	// array type alias
 	using arr_t = nostl::vector<std::string, 10>;
@@ -135,7 +110,7 @@ int test::constructors_and_assignment_operations() {
  * 
  * returns 0 if test succeeds, otherwise, a negative value.
 */
-int test::constructors_and_assignment_operations_std() {
+int test::vector::constructors_and_assignment_operations_std() {
 
 	// array type alias
 	using arr_t = nostl::vector<std::string, 10>;
@@ -172,7 +147,7 @@ int test::constructors_and_assignment_operations_std() {
  *   - operator==
  *   - operator!=
 */
-int test::compare_vector() {
+int test::vector::compare() {
 
 	// type aliases
 	using vec_t = nostl::vector<int>;

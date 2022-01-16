@@ -2,7 +2,11 @@
 project(UnitTests)
 
 # Create executable target
-add_executable(${PROJECT_NAME} ./src/main.cpp ./src/unit_tests.cpp)
+add_executable(
+	${PROJECT_NAME} 
+	./src/main.cpp 
+	./src/unit_tests.cpp
+)
 
 # Setting the target's properties
 set_target_properties(
