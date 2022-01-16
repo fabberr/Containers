@@ -18,6 +18,7 @@
 /********** Unit Tests (definition) **********/
 
 /**
+ * arg: constructors
  * Unit Test: constructors and assignment operations.
  *   - initializer list constructor
  *   - copy constructor
@@ -75,6 +76,7 @@ int test::vector::constructors_and_assignment_operations() {
 }
 
 /**
+ * arg: std_constructors
  * Unit Test: constructors and assignment (from std::vector) operations.
  *   - copy (from std::vector) constructor
  *   - copy (from std::vector) assignment
@@ -114,6 +116,7 @@ int test::vector::constructors_and_assignment_operations_std() {
 }
 
 /**
+ * arg: compare
  * Unit Test: comparison operator overloads.
  *   - operator==
  *   - operator!=
@@ -150,3 +153,5 @@ int test::vector::compare() {
 	// status code to be returned in main
 	return 0;
 }
+
+/** @todo add checks to validate the tests (currently only validating if program exits normally) */

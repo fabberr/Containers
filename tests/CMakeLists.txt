@@ -28,6 +28,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE nostl) # link libnostl.a
 
 # ./UnitTests --constructors
 add_test(
-	NAME "Constructors & Assignment Operations" 
-	COMMAND ${PROJECT_NAME} --constructors
+	NAME "Vector: Constructors & Assignment Operations" 
+	COMMAND "${PROJECT_NAME} vector constructors"
 )
