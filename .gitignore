@@ -1,11 +1,6 @@
 # directories
 .vscode
 build
-scripts
 
 # logs
 log.*
-
-# script files
-*.bat
-*.sh
