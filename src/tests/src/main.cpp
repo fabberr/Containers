@@ -1,10 +1,10 @@
 /********** Included Headers **********/
 
 // C++ library
-#include <iostream> 		// std::cout, std::endl, std::cerr, std::fprintf
-#include <map> 				// std::map
-#include <functional> 		// std::function
-#include <filesystem> 		// filesystem utilities
+#include <iostream> 	// std::cout, std::endl, std::cerr, std::fprintf
+#include <map> 			// std::map
+#include <functional> 	// std::function
+#include <filesystem> 	// filesystem utilities
 
 // filesystem namespace alias
 namespace fs = std::filesystem;
@@ -15,7 +15,7 @@ namespace fs = std::filesystem;
 #include <cstdlib> 	// std::exit
 
 // internal
-#include "../include/unit_tests.h" // declarations of test function
+#include "../include/unit_tests.h" // test function declarations
 
 /********** Program Control Logic **********/
 

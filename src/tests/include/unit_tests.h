@@ -1,7 +1,7 @@
 #ifndef LIBNOSTL_UNIT_TESTS_H
 #define LIBNOSTL_UNIT_TESTS_H
 
-/********** Unit Tests (declaration) **********/
+/********** Unit Tests (declarations) **********/
 
 /** Provides unit tests for libnostl. */
 namespace test {

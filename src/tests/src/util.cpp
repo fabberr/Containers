@@ -1,9 +1,9 @@
 /********** Included Headers **********/
 
 // internal
-#include "../include/util.h" // declarations for utility functions
+#include "../include/util.h" // utility function declarations
 
-/********** Utility Functions (definition) **********/
+/********** Utility Functions (definitions) **********/
 
 /**
  * Prints the contents of a nostl::vector along with information about its 

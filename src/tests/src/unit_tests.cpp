@@ -1,21 +1,21 @@
 /********** Included Headers **********/
 
 // C++ library
-#include <iostream>		// std::cout, std::printf
-#include <utility> 		// std::move
-#include <string> 		// std::string
-#include <vector> 		// std::vector
-#include <array> 		// std::array
+#include <iostream> // std::cout, std::printf
+#include <utility> 	// std::move
+#include <string> 	// std::string
+#include <vector> 	// std::vector
+#include <array> 	// std::array
 
 // libnostl
 #include <nostl/vector.h> 	// nostl::vector
 #include <nostl/array.h> 	// nostl::array
 
 // internal
-#include "../include/util.h" 		// declarations for utility functions
-#include "../include/unit_tests.h" 	// declarations of test functions
+#include "../include/util.h" 		// utility function declarations
+#include "../include/unit_tests.h" 	// test function declarations
 
-/********** Unit Tests (definition) **********/
+/********** Unit Tests (definitions) **********/
 
 /**
  * arg: constructors
@@ -26,7 +26,7 @@
  *   - copy assignment
  *   - move assignment
  * 
- * returns 0 if test succeeds, otherwise, a negative value.
+ * returns 0 if test passes, a negative value otherwise.
 */
 int test::vector::constructors_and_assignment_operations() {
 
@@ -81,7 +81,7 @@ int test::vector::constructors_and_assignment_operations() {
  *   - copy (from std::vector) constructor
  *   - copy (from std::vector) assignment
  * 
- * returns 0 if test succeeds, otherwise, a negative value.
+ * returns 0 if test passes, a negative value otherwise.
 */
 int test::vector::constructors_and_assignment_operations_std() {
 
@@ -120,6 +120,7 @@ int test::vector::constructors_and_assignment_operations_std() {
  * Unit Test: comparison operator overloads.
  *   - operator==
  *   - operator!=
+ * returns 0 if test passes, a negative value otherwise.
 */
 int test::vector::compare() {
 

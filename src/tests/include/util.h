@@ -5,13 +5,12 @@
 
 // C++ library
 #include <iostream> // std::ostream
-#include <vector> 	// std::vector
 #include <string> 	// std::string
 
 // libnostl
 #include <nostl/vector.h> // nostl::vector
 
-/********** Utility Functions (definition) **********/
+/********** Utility Functions (definitions) **********/
 
 namespace util {
 
