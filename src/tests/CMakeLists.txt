@@ -4,7 +4,8 @@ project(UnitTests)
 # Create executable target
 add_executable(
 	${PROJECT_NAME} 
-	./src/main.cpp 
+	./src/main.cpp
+	./src/cmdline_parser.cpp 
 	./src/unit_tests.cpp
 	./src/util.cpp
 )
