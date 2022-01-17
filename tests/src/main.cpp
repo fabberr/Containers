@@ -1,8 +1,7 @@
 /********** Included Headers **********/
 
 // C++ library
-#include <iostream> 		// std::cout, std::cerr, std::fprintf
-#include <string> 			// std::string
+#include <iostream> 		// std::cout, std::endl, std::cerr, std::fprintf
 #include <map> 				// std::map
 #include <functional> 		// std::function
 #include <filesystem> 		// filesystem utilities
@@ -12,7 +11,7 @@ namespace fs = std::filesystem;
 
 // C library
 #include <cstddef> 	// std::size_t
-#include <cstring> 	// std::strncmp
+#include <cstring> 	// std::strcmp, std::strncmp
 #include <cstdlib> 	// std::exit
 
 // internal
@@ -27,14 +26,15 @@ namespace fs = std::filesystem;
 /**
  * A c-style string comparison functor, assumes the strings are null-terminated.
  * Allows member access through std::map::operator[] using a null-terminated 
- * character string, comparing it to each key in the map.
+ * character string as key.
 */
 struct cstring_cmp {
+	/** Comparison predicate, compares a string to a key in the map. */
 	bool operator()(const char* lhs, const char* rhs) const {
 	   return (
 		   (lhs && rhs) && 				// nullptr checks
 		   (std::strcmp(lhs, rhs) < 0) 	// comparing strings
-		); // FIXME: strcmp could cause a memory leak, look into a way of using strncmp here instead
+		); // FIXME: strcmp could cause a buffer overflow, look into a way of using strncmp here instead
    }
 };
 
@@ -43,14 +43,14 @@ using unit_t = std::function<int(void)>; 					// unit test signature: int return
 using map_t = std::map<const char*, unit_t, cstring_cmp>; 	// maps a test's cmd line arg to it's respective function pointer, provides a user-defined comparator
 
 // maps available nostl::vector tests to their respective command line args
-map_t vector_callbacks{
+map_t vector_callbacks {
 	{ "constructors"	, test::vector::constructors_and_assignment_operations 		}, 
 	{ "std-constructors", test::vector::constructors_and_assignment_operations_std 	}, 
 	{ "compare"			, test::vector::compare 									}
 };
 
 // maps available nostl::array tests to their respective command line args
-map_t array_callbacks{ { "not-implemented", nullptr } };
+map_t array_callbacks{};
 
 // unit test to run
 unit_t run_test = nullptr;
@@ -62,7 +62,8 @@ void help(const char* argv[], std::ostream& output = std::cerr) {
 	const auto program = fs::path(argv[0]).stem().string();
 	output << 
 		"Usage: ./" << program << " <container> <test> [OPTIONS]\n"
-		"\nOPTIONS:\n"
+		"\n"
+		"OPTIONS:\n"
 		"  --usage, --help, -h, -?:\n"
 		"    Displays this help message.\n"
 		"\n"
@@ -77,11 +78,27 @@ void help(const char* argv[], std::ostream& output = std::cerr) {
  * character output.
 */
 void list() {
+	std::cout << 
+		"List of available containers and unit tests tests for libnostl:\n"
+		"\n"
+		"vector\n"
+		"|\n"
+		"+---constructors\n"
+		"|       Tests constructors and assignment operations.\n"
+		"|       See `./tests/src/unit_tests/unit_tests.cpp:31` for more info.\n"
+		"|\n"
+		"+---std-constructors\n"
+		"|       Tests constructor and copy assignment operation from std::vector.\n"
+		"|       See `./tests/src/unit_tests/unit_tests.cpp:86` for more info.\n"
+		"|\n"
+		"\\---compare\n"
+		"        Tests equality and inequality operators.\n"
+		"        See `./tests/src/unit_tests/unit_tests.cpp:124` for more info.\n"
+	<< std::endl;
 }
 
 /**
- * Parses the second command line argument <test> and sets control variable if a 
- * valid test was resolved.
+ * Parses the second command line argument <test> to determine which test should be run
 */
 void parse_test(map_t& callback_map, const char* argv[]) {
 
@@ -100,7 +117,7 @@ void parse_test(map_t& callback_map, const char* argv[]) {
 }
 
 /**
- * Parses command line arguments and sets program control variable accordingly.
+ * Parses command line arguments and sets control variables accordingly.
 */
 void parse(int argc, const char* argv[]) {
 
@@ -117,8 +134,7 @@ void parse(int argc, const char* argv[]) {
 			exit(0);
 		} else if (std::strncmp(arg, "--list", 6) == 0) { // --list
 			// dump available containers and tests to cout, terminate program successfully
-			// list();
-			std::cout << "--list not implemented" << std::endl;
+			list();
 			exit(0);
 		}
 	}
@@ -148,13 +164,11 @@ void parse(int argc, const char* argv[]) {
 
 int main(int argc, char* argv[]) {
 
-	// parse cmd line args and sets control variable, if no test was resolved from the args, the program exits with code -1
+	// parse cmd line args and sets control variable `run_test`, if no test was resolved from the args, the program exits with code -1
 	parse(argc, (const char**)argv);
 
 	// return status code from test's execution
 	return run_test();
 }
 
-/** @todo --help */
-/** @todo --list */
-/** @todo move cmd line parser and program control logic to a separate file (make global vars static to access them across translation units) */
+/** @todo move cmd line parser and program control logic to a separate file (declare global vars as extren to access them from another translation unit) */
