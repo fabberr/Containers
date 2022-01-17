@@ -10,9 +10,11 @@
 // libnostl
 #include <nostl/vector.h> // nostl::vector
 
-/********** Utility Functions (definitions) **********/
+/********** util.h **********/
 
 namespace util {
+
+	/********** Utility Functions (definitions) **********/
 
 	template<typename T, size_t N>
 	void print_vec_stats(const nostl::vector<T, N>& vec);

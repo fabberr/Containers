@@ -1,5 +1,5 @@
-#ifndef LIBNOSTL_CMDLINE_PARSER_H
-#define LIBNOSTL_CMDLINE_PARSER_H
+#ifndef LIBNOSTL_TESTS_CMDLINE_PARSER_H
+#define LIBNOSTL_TESTS_CMDLINE_PARSER_H
 
 /********** Included Headers **********/
 
@@ -45,4 +45,4 @@ namespace parser {
 
 } // namespace parser
 
-#endif // LIBNOSTL_CMDLINE_PARSER_H
+#endif // LIBNOSTL_TESTS_CMDLINE_PARSER_H

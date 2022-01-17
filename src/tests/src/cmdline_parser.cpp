@@ -1,7 +1,7 @@
 /********** Included Headers **********/
 
 // C++ library
-#include <iostream> 	// std::ostream, std::cout, std::cerr, std::fprintf, std::endl
+#include <iostream> 	// std::ostream, std::cout, std::fprintf, std::endl
 #include <string> 		// std::string
 #include <filesystem> 	// filesystem utilities
 
@@ -116,11 +116,11 @@ void parser::parse(int argc, const char* argv[]) {
 		) {
 			// output help to cout, terminate program successfully
 			parser::help(argv, std::cout);
-			exit(0);
+			std::exit(0);
 		} else if (std::strncmp(arg, "--list", 6) == 0) { // --list
 			// dump available containers and tests to cout, terminate program successfully
 			parser::list();
-			exit(0);
+			std::exit(0);
 		}
 	}
 
