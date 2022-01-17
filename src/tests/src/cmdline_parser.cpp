@@ -35,7 +35,7 @@ parser::map_t vector_callbacks {
 parser::map_t array_callbacks{};
 
 // unit test to run
-extern parser::unit_t run_test; // use external linkage, declared in main.cpp
+parser::unit_t run_test; // accessible across translation units, used in main.cpp
 
 /********** Command Line Parser Functions (definitions) **********/
 

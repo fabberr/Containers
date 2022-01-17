@@ -6,7 +6,7 @@
 /********** Program Control Logic **********/
 
 // unit test to run
-parser::unit_t run_test; // accessible across translation units, used in cmdline_parser.cpp
+extern parser::unit_t run_test; // linked externally from cmdline_parser.cpp
 
 /********** Main Entry Point **********/
 
