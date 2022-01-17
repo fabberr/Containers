@@ -20,22 +20,22 @@ namespace fs = std::filesystem;
 /********** Program Control Logic **********/
 
 // macros
-#define PGRM_IDX 		0 	// index of program name in arg list
-#define CONTAINER_IDX 	1 	// index of <container> argument in arg list
-#define TEST_IDX 		2 	// index of <test> argument in arg list
+#define ARG_PRGRM 		(argv[0]) 	/** Program name. */
+#define ARG_CONTAINER 	(argv[1]) 	/** <container> command line argument. */
+#define ARG_TEST 		(argv[2]) 	/** <test> command line argument. */
 
-// maps available nostl::vector unit tests to their respective command line args
-parser::map_t vector_callbacks {
+// maps <test> cmd line args to their respective nostl::vector unit tests, only visible in this translatio unit
+static parser::cllbkmap_t vector_callbacks {
 	{ "constructors"	, test::vector::constructors_and_assignment_operations 		}, 
 	{ "std-constructors", test::vector::constructors_and_assignment_operations_std 	}, 
 	{ "compare"			, test::vector::compare 									}
 };
 
-// maps available nostl::array tests to their respective command line args
-parser::map_t array_callbacks{};
+// maps <test> cmd line args to their respective nostl::array unit tests, only visible in this translatio unit
+static parser::cllbkmap_t array_callbacks{};
 
 // unit test to run
-parser::unit_t run_test; // accessible across translation units, used in main.cpp
+parser::unit_t run_test; // declared here, linked externally in main.cpp
 
 /********** Command Line Parser Functions (definitions) **********/
 
@@ -43,7 +43,7 @@ parser::unit_t run_test; // accessible across translation units, used in main.cp
  * Outputs help message to an std::ostream (std::cerr by default).
 */
 void parser::help(const char* argv[], std::ostream& output) {
-	const std::string& program = fs::path(argv[PGRM_IDX]).stem().string();
+	const std::string& program = fs::path(ARG_PRGRM).stem().string();
 	output << 
 		"Usage: ./" << program << " <container> <test> [OPTIONS]\n"
 		"\n"
@@ -62,9 +62,8 @@ void parser::help(const char* argv[], std::ostream& output) {
  * character output.
 */
 void parser::list() {
+
 	std::cout << 
-		"List of available containers and unit tests tests for libnostl:\n"
-		"\n"
 		"vector\n"
 		"|\n"
 		"+---constructors\n"
@@ -85,18 +84,18 @@ void parser::list() {
  * Parses the second command line argument <test> to determine which unit test 
  * should be run.
 */
-void parser::parse_test(map_t& callback_map, const char* argv[]) {
+void parser::parse_test(cllbkmap_t& callback_map, const char* argv[]) {
 
 	// Checks if a test exists in `callback_map` and retrieves it.
 	// If no key specified by <test> cmd line arg is found, a new key:value pair is 
 	// inserted with the `second` member as a default-initialized unit_t (an "empty"
 	// std::function that points to nullptr), which is then returned as a reference.
-	if (const unit_t& cllbk = callback_map[argv[TEST_IDX]]; cllbk) { // assign to `cllbk` then check if not null
+	if (const unit_t& cllbk = callback_map[ARG_TEST]; cllbk) { // assign to `cllbk` then check if not null
 		// set control variable
 		run_test = cllbk;
 	} else {
 		// error
-		std::fprintf(stderr, "[ERROR] container \"%s\" has no test \"%s\" defined\n", argv[CONTAINER_IDX], argv[TEST_IDX]);
+		std::fprintf(stderr, "[ERROR] container \"%s\" has no test \"%s\" defined\n", ARG_CONTAINER, ARG_TEST);
 		std::exit(-1);
 	}
 }
@@ -109,7 +108,7 @@ void parser::parse(int argc, const char* argv[]) {
 	// parsing optional args, if any are present, program exits after operation
 	for (std::size_t arg_idx = 1; arg_idx < argc; ++arg_idx) {
 		// for each arg, search for optional args
-		const char* arg = argv[arg_idx];
+		parser::arg_t arg = argv[arg_idx];
 		if ((std::strncmp(arg    , "--usage", 7) == 0) 	|| 	// --usage
 			(std::strncmp(arg + 1, "-h"     , 2) == 0) 	|| 	// --help, -h, among other such substrings lmao
 			(std::strncmp(arg    , "-?"     , 2) == 0) 		// -?
@@ -132,17 +131,15 @@ void parser::parse(int argc, const char* argv[]) {
 	}
 
 	// parsing <container> argument
-	if (std::strncmp(argv[CONTAINER_IDX], "vector", 6) == 0) {
+	if (std::strncmp(ARG_CONTAINER, "vector", 6) == 0) {
 		// parsing <test> argument with callback map for nostl::vector tests
 		parser::parse_test(vector_callbacks, argv);
-	} else if (std::strncmp(argv[CONTAINER_IDX], "array", 5) == 0) {
+	} else if (std::strncmp(ARG_CONTAINER, "array", 5) == 0) {
 		// parsing <test> argument with callback map for nostl::array tests
 		parser::parse_test(array_callbacks, argv);
 	} else {
 		// error
-		std::fprintf(stderr, "[ERROR] container \"%s\" does not exist\n", argv[CONTAINER_IDX]);
+		std::fprintf(stderr, "[ERROR] container \"%s\" does not exist\n", ARG_CONTAINER);
 		std::exit(-1);
 	}
 }
-
-/** @todo generate --list programatically array of entries (entry -> container arg + map of unit tests) */

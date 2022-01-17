@@ -15,7 +15,7 @@
 
 namespace parser {
 
-	/********** Type Definitions **********/
+	/********** Functors **********/
 	
 	/**
 	 * A c-style string comparison functor, assumes the strings are null-terminated.
@@ -32,15 +32,17 @@ namespace parser {
 		}
 	};
 
-	// type aliases
-	using unit_t = std::function<int(void)>; 					// unit test signature: int return type, no parameters
-	using map_t = std::map<const char*, unit_t, cstring_cmp>; 	// maps a test's cmd line arg to it's respective function pointer, provides a user-defined comparator
-	
+	/********** Type Definitions **********/
+
+	typedef const char* 							arg_t; 		/** Command line argument type. A C-style null-terminated character string. */
+	typedef std::function<int(void)> 				unit_t; 	/** Unit test function pointer type. */
+	typedef std::map<arg_t, unit_t, cstring_cmp> 	cllbkmap_t; /** Callback map type. Maps a <test> command line argument to a unit test function pointer. */
+
 	/********** Command Line Parser Functions (declarations) **********/
 
 	void help(const char* argv[], std::ostream& output = std::cerr);
 	void list();
-	void parse_test(map_t& callback_map, const char* argv[]);
+	void parse_test(cllbkmap_t& callback_map, const char* argv[]);
 	void parse(int argc, const char* argv[]);
 
 } // namespace parser
