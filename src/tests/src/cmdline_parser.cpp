@@ -32,7 +32,15 @@ static parser::cllbkmap_t vector_callbacks {
 };
 
 // maps <test> cmd line args to their respective nostl::array unit tests, only visible in this translation unit
-static parser::cllbkmap_t array_callbacks{};
+static parser::cllbkmap_t array_callbacks {
+	{ "not-implemented", nullptr }
+};
+
+// maps <container> cmd line args to their respective unit test callback maps, only visible in this translation unit
+static parser::containers_t containers {
+	{ "vector", vector_callbacks }, 
+	{ "array" , array_callbacks  }
+};
 
 // unit test to run
 parser::unit_t run_test; // declared here, linked externally in main.cpp
@@ -81,26 +89,6 @@ void parser::list() {
 }
 
 /**
- * Parses the second command line argument <test> to determine which unit test 
- * should be run.
-*/
-void parser::parse_test(cllbkmap_t& callback_map, const char* argv[]) {
-
-	// Checks if a test exists in `callback_map` and retrieves it.
-	// If no key specified by <test> cmd line arg is found, a new key:value pair is 
-	// inserted with the `second` member as a default-initialized unit_t (an "empty"
-	// std::function that points to nullptr), which is then returned as a reference.
-	if (const unit_t& cllbk = callback_map[ARG_TEST]; cllbk) { // assign to `cllbk` then check if not null
-		// set control variable
-		run_test = cllbk;
-	} else {
-		// error
-		std::fprintf(stderr, "[ERROR] container \"%s\" has no test \"%s\" defined\n", ARG_CONTAINER, ARG_TEST);
-		std::exit(-1);
-	}
-}
-
-/**
  * Parses command line arguments and sets control variables accordingly.
 */
 void parser::parse(int argc, const char* argv[]) {
@@ -131,15 +119,21 @@ void parser::parse(int argc, const char* argv[]) {
 	}
 
 	// parsing <container> argument
-	if (std::strncmp(ARG_CONTAINER, "vector", 6) == 0) {
-		// parsing <test> argument with callback map for nostl::vector tests
-		parser::parse_test(vector_callbacks, argv);
-	} else if (std::strncmp(ARG_CONTAINER, "array", 5) == 0) {
-		// parsing <test> argument with callback map for nostl::array tests
-		parser::parse_test(array_callbacks, argv);
+	if (cllbkmap_t& cllbck_map = containers[ARG_CONTAINER]; !(cllbck_map.empty())) {
+		// parsing <test> argument
+		if (const unit_t& cllbk = cllbck_map[ARG_TEST]; cllbk) {
+			// set control variable
+			run_test = cllbk;
+		} else {
+			// error
+			std::fprintf(stderr, "[ERROR] container \"%s\" has no test \"%s\" defined\n", ARG_CONTAINER, ARG_TEST);
+			std::exit(-1);
+		}
 	} else {
 		// error
 		std::fprintf(stderr, "[ERROR] container \"%s\" does not exist\n", ARG_CONTAINER);
 		std::exit(-1);
 	}
 }
+
+/** @todo --brief option */
