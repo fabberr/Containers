@@ -21,14 +21,20 @@ target_link_libraries(${PROJECT_NAME} PRIVATE nostl) # link libnostl.a
 
 #---------- Unit Tests ----------
 
-# demo test
-# add_test(
-# 	NAME "demo test" 
-# 	COMMAND ${PROJECT_NAME}
-# )
-
-# ./UnitTests vector constructors
+# Tests constructors and assignment operations.
 add_test(
-	NAME "Vector: Constructors & Assignment Operations" 
-	COMMAND "${PROJECT_NAME} vector constructors"
+	NAME "nostl::vector: Constructors and assignment operations." 
+	COMMAND ${PROJECT_NAME} vector initialization
+)
+
+# Tests constructor and copy assignment operation from std::vector.
+add_test(
+	NAME "nostl::vector: Copy constructor and copy assignment from std::vector." 
+	COMMAND ${PROJECT_NAME} vector initialization-std
+)
+
+# Tests equality and inequality operators.
+add_test(
+	NAME "nostl::vector: Equality and inequality operators." 
+	COMMAND ${PROJECT_NAME} vector compare
 )

@@ -43,7 +43,7 @@ static parser::cllbkmap_t array_callbacks {
 };
 
 /**
- * Containers map. Maps <container> cmd line args to their respective unit test 
+ * Maps <container> cmd line args to their respective unit test 
  * callback maps.
  * Only visible in this translation unit.
 */
