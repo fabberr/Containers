@@ -18,7 +18,7 @@
 /********** Unit Tests (definitions) **********/
 
 /**
- * arg: constructors
+ * arg: initialization
  * Unit Test: constructors and assignment operations.
  *   - initializer list constructor
  *   - copy constructor
@@ -28,7 +28,7 @@
  * 
  * returns 0 if test passes, a negative value otherwise.
 */
-int test::vector::constructors_and_assignment_operations() {
+int test::vector::initialization() {
 
 	// array type alias
 	using arr_t = nostl::vector<std::string, 10>;
@@ -76,14 +76,14 @@ int test::vector::constructors_and_assignment_operations() {
 }
 
 /**
- * arg: std-constructors
+ * arg: initialization-std
  * Unit Test: constructors and assignment (from std::vector) operations.
  *   - copy (from std::vector) constructor
  *   - copy (from std::vector) assignment
  * 
  * returns 0 if test passes, a negative value otherwise.
 */
-int test::vector::constructors_and_assignment_operations_std() {
+int test::vector::initialization_std() {
 
 	// array type alias
 	using arr_t = nostl::vector<std::string, 10>;

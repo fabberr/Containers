@@ -41,8 +41,9 @@ namespace parser {
 
 	/********** Command Line Parser Functions (declarations) **********/
 
-	void help(const char* argv[], std::ostream& output = std::cerr);
+	void help(const char* argv[], std::ostream& out = std::cerr);
 	void list();
+	void brief();
 	void parse(int argc, const char* argv[]);
 
 } // namespace parser

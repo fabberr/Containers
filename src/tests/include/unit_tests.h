@@ -10,8 +10,8 @@ namespace test {
 	
 	/** Subset of tests for nostl::vector. Specify 'vector' as command line argument. */
 	namespace vector {
-		int constructors_and_assignment_operations();
-		int constructors_and_assignment_operations_std();
+		int initialization();
+		int initialization_std();
 		int compare();
 	} // namspace vector
 

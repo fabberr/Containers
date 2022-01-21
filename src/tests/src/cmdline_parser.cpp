@@ -20,39 +20,53 @@ namespace fs = std::filesystem;
 /********** Program Control Logic **********/
 
 // macros
-#define ARG_PRGRM 		(argv[0]) 	/** Program name. */
+#define ARG_EXECUTABLE 	(argv[0]) 	/** Executable name. */
 #define ARG_CONTAINER 	(argv[1]) 	/** <container> command line argument. */
 #define ARG_TEST 		(argv[2]) 	/** <test> command line argument. */
 
-// maps <test> cmd line args to their respective nostl::vector unit tests, only visible in this translation unit
+/**
+ * Maps <test> cmd line args to their respective nostl::vector unit tests.
+ * Only visible in this translation unit.
+*/
 static parser::cllbkmap_t vector_callbacks {
-	{ "constructors"	, test::vector::constructors_and_assignment_operations     }, 
-	{ "std-constructors", test::vector::constructors_and_assignment_operations_std }, 
-	{ "compare"			, test::vector::compare                                    }
+	{ "initialization"	  , test::vector::initialization     }, 
+	{ "initialization-std", test::vector::initialization_std }, 
+	{ "compare"			  , test::vector::compare            }
 };
 
-// maps <test> cmd line args to their respective nostl::array unit tests, only visible in this translation unit
+/**
+ * Maps <test> cmd line args to their respective nostl::array unit tests.
+ * Only visible in this translation unit.
+*/
 static parser::cllbkmap_t array_callbacks {
 	{ "not-implemented", nullptr }
 };
 
-// maps <container> cmd line args to their respective unit test callback maps, only visible in this translation unit
+/**
+ * Containers map. Maps <container> cmd line args to their respective unit test 
+ * callback maps.
+ * Only visible in this translation unit.
+*/
 static parser::containers_t containers {
 	{ "vector", vector_callbacks }, 
 	{ "array" , array_callbacks  }
 };
 
-// unit test to run
-parser::unit_t run_test; // declared here, linked externally in main.cpp
+/**
+ * Unit test to run.
+ * The std::function object is declared in this translation unit but linked 
+ * externally in main.cpp, where the test will be invoked.
+*/
+parser::unit_t run_test = nullptr;
 
 /********** Command Line Parser Functions (definitions) **********/
 
 /**
  * Outputs help message to an std::ostream (std::cerr by default).
 */
-void parser::help(const char* argv[], std::ostream& output) {
-	const std::string& program = fs::path(ARG_PRGRM).stem().string();
-	output << 
+void parser::help(const char* argv[], std::ostream& out) {
+	const std::string& program = fs::path(ARG_EXECUTABLE).stem().string();
+	out << 
 		"Usage: ./" << program << " <container> <test> [OPTIONS]\n"
 		"\n"
 		"OPTIONS:\n"
@@ -61,7 +75,10 @@ void parser::help(const char* argv[], std::ostream& output) {
 		"\n"
 		"  --list:\n"
 		"    Dumps a list of available containers and their respective tests to standard\n"
-		"    character output." 
+		"    character output."
+		"\n"
+		"  --brief:\n"
+		"    Same as --list but also displays a brief description."
 	<< std::endl;
 }
 
@@ -71,20 +88,37 @@ void parser::help(const char* argv[], std::ostream& output) {
 */
 void parser::list() {
 
+	// for each container
+	for (const auto& [container, cllbk_map] : containers) {
+		// print name of container followed by the name of its available tests
+		std::cout << container << '\n';
+		for (const auto& [test, function] : cllbk_map) {
+			std::cout << "  " << test << '\n';
+		}
+	}
+	std::flush(std::cout);
+}
+
+/**
+ * Dumps a list of available containers and their respective tests to standard 
+ * character output with brief descriptions for each unit test.
+*/
+void parser::brief() {
+
 	std::cout << 
 		"vector\n"
 		"|\n"
-		"+---constructors\n"
+		"+---initialization\n"
 		"|       Tests constructors and assignment operations.\n"
 		"|       See `./tests/src/unit_tests/unit_tests.cpp:31` for more info.\n"
 		"|\n"
-		"+---std-constructors\n"
+		"+---initialization-std\n"
 		"|       Tests constructor and copy assignment operation from std::vector.\n"
 		"|       See `./tests/src/unit_tests/unit_tests.cpp:86` for more info.\n"
 		"|\n"
 		"\\---compare\n"
 		"        Tests equality and inequality operators.\n"
-		"        See `./tests/src/unit_tests/unit_tests.cpp:124` for more info.\n"
+		"        See `./tests/src/unit_tests/unit_tests.cpp:124` for more info."
 	<< std::endl;
 }
 
@@ -95,7 +129,7 @@ void parser::parse(int argc, const char* argv[]) {
 
 	// parsing optional args, if any are present, program exits after operation
 	for (std::size_t arg_idx = 1; arg_idx < argc; ++arg_idx) {
-		// for each arg, search for optional args
+		// for each arg, check if any of the optional args are present
 		parser::arg_t arg = argv[arg_idx];
 		if ((std::strncmp(arg    , "--usage", 7) == 0) 	|| 	// --usage
 			(std::strncmp(arg + 1, "-h"     , 2) == 0) 	|| 	// --help, -h, among other such substrings lmao
@@ -104,9 +138,13 @@ void parser::parse(int argc, const char* argv[]) {
 			// output help to cout, terminate program successfully
 			parser::help(argv, std::cout);
 			std::exit(0);
-		} else if (std::strncmp(arg, "--list", 6) == 0) { // --list
-			// dump available containers and tests to cout, terminate program successfully
+		} else if (std::strncmp(arg, "--list", 6) == 0) { 	// --list
+			// dump list of containers and tests, terminate program successfully
 			parser::list();
+			std::exit(0);
+		} else if (std::strncmp(arg, "--brief", 7) == 0) { 	// --brief
+			// dump list of containers and tests with brief description to cout, terminate program successfully
+			parser::brief();
 			std::exit(0);
 		}
 	}
@@ -135,5 +173,3 @@ void parser::parse(int argc, const char* argv[]) {
 		std::exit(-1);
 	}
 }
-
-/** @todo --brief option */
