@@ -75,10 +75,10 @@ void parser::help(const char* argv[], std::ostream& out) {
 		"\n"
 		"  --list:\n"
 		"    Dumps a list of available containers and their respective tests to standard\n"
-		"    character output."
+		"    character output.\n"
 		"\n"
 		"  --brief:\n"
-		"    Same as --list but also displays a brief description."
+		"    Same as --list but also displays a brief description.\n"
 	<< std::endl;
 }
 
@@ -96,7 +96,7 @@ void parser::list() {
 			std::cout << "  " << test << '\n';
 		}
 	}
-	std::flush(std::cout);
+	std::cout << std::endl;
 }
 
 /**
@@ -118,7 +118,7 @@ void parser::brief() {
 		"|\n"
 		"\\---compare\n"
 		"        Tests equality and inequality operators.\n"
-		"        See `./tests/src/unit_tests/unit_tests.cpp:124` for more info."
+		"        See `./tests/src/unit_tests/unit_tests.cpp:124` for more info.\n"
 	<< std::endl;
 }
 
