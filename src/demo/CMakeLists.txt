@@ -11,4 +11,4 @@ set_target_properties(
 )
 
 # Link libraries to target executable
-target_link_libraries(${PROJECT_NAME} PRIVATE nostl) # link libnostl.a
+target_link_libraries(${PROJECT_NAME} PRIVATE nostl) # link libnostl

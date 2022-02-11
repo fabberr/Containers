@@ -12,7 +12,7 @@ project(Containers)
 include(CTest)
 
 # Add subdirectories
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/nostl") 	# target: nostl (static library)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/nostl") 	# target: nostl (shared library)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/demo") 	# target: Demo (executable)
 
 # Check if in root CMakeLists.txt
