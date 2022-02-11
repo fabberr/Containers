@@ -1,7 +1,7 @@
 /********** Included Headers **********/
 
 // internal
-#include "../include/cmdline_parser.h" // parser::unit_t, parser_parse
+#include "../include/cmdline_parser.h" // parser::unit_t, parser::parse
 
 /********** Program Control Logic **********/
 

@@ -77,7 +77,7 @@ int test::vector::initialization() {
 
 /**
  * arg: initialization-std
- * Unit Test: constructors and assignment (from std::vector) operations.
+ * Unit Test: constructor and assignment (from std::vector) operations.
  *   - copy (from std::vector) constructor
  *   - copy (from std::vector) assignment
  * 

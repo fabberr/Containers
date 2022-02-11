@@ -12,7 +12,7 @@ add_executable(
 
 # Setting the target's properties
 set_target_properties(
-	${PROJECT_NAME} PROPERTIES 	# Setting properties for ´tests´ target
+	${PROJECT_NAME} PROPERTIES 	# Setting properties for ´UnitTests´ target
 	CXX_STANDARD 20				# Set the target's C++ standard to C++ 20
 )
 

@@ -78,7 +78,7 @@ void parser::help(const char* argv[], std::ostream& out) {
 		"    character output.\n"
 		"\n"
 		"  --brief:\n"
-		"    Same as --list but also displays a brief description.\n"
+		"    Same as --list but also displays a brief description."
 	<< std::endl;
 }
 
@@ -96,7 +96,7 @@ void parser::list() {
 			std::cout << "  " << test << '\n';
 		}
 	}
-	std::cout << std::endl;
+	std::cout.flush();
 }
 
 /**
@@ -118,7 +118,7 @@ void parser::brief() {
 		"|\n"
 		"\\---compare\n"
 		"        Tests equality and inequality operators.\n"
-		"        See `./tests/src/unit_tests/unit_tests.cpp:124` for more info.\n"
+		"        See `./tests/src/unit_tests/unit_tests.cpp:124` for more info."
 	<< std::endl;
 }
 
@@ -139,7 +139,7 @@ void parser::parse(int argc, const char* argv[]) {
 			parser::help(argv, std::cout);
 			std::exit(0);
 		} else if (std::strncmp(arg, "--list", 6) == 0) { 	// --list
-			// dump list of containers and tests, terminate program successfully
+			// dump list of containers and tests to cout, terminate program successfully
 			parser::list();
 			std::exit(0);
 		} else if (std::strncmp(arg, "--brief", 7) == 0) { 	// --brief

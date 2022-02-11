@@ -8,17 +8,17 @@ namespace test {
 
 	/********** Unit Tests (declarations) **********/
 	
-	/** Subset of tests for nostl::vector. Specify 'vector' as command line argument. */
+	/** Subset of tests for nostl::vector. Specify `vector` as command line argument. */
 	namespace vector {
 		int initialization();
 		int initialization_std();
 		int compare();
-	} // namspace vector
+	} // namespace vector
 
-	/** Subset of tests for nostl::array. Specify 'array' as command line argument. */
+	/** Subset of tests for nostl::array. Specify `array` as command line argument. */
 	namespace array {
 		// ...
-	} // namspace array
+	} // namespace array
 
 } // namespace test
 
