@@ -3,7 +3,7 @@ project(nostl)
 
 # Create library target
 add_library(
-	${PROJECT_NAME} STATIC
+	${PROJECT_NAME} SHARED
 	./include/nostl/arr_iterators.h
 	./include/nostl/vector.h
 	./include/nostl/array.h
