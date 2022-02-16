@@ -12,6 +12,7 @@ namespace fs = std::filesystem;
 #include <cstddef> // std::size_t
 #include <cstring> // std::strncmp
 #include <cstdlib> // std::exit
+#include <cstdint> // std::int32_t
 
 // internal
 #include "../include/cmdline_parser.h" 	// command line parser types and functions declarations
@@ -23,6 +24,9 @@ namespace fs = std::filesystem;
 #define ARG_EXECUTABLE 	(argv[0]) 	/** Executable name. */
 #define ARG_CONTAINER 	(argv[1]) 	/** <container> command line argument. */
 #define ARG_TEST 		(argv[2]) 	/** <test> command line argument. */
+
+// function-like macros
+#define MSG_AND_EXIT_FAILURE(msg, ...) std::fprintf(stderr, msg __VA_OPT__(,) __VA_ARGS__); std::exit(static_cast<std::int32_t>(-1));
 
 /**
  * Maps <test> cmd line args to their respective nostl::vector unit tests.
@@ -163,13 +167,9 @@ void parser::parse(int argc, const char* argv[]) {
 			// set control variable
 			run_test = cllbk;
 		} else {
-			// error
-			std::fprintf(stderr, "[ERROR] container \"%s\" has no test \"%s\" defined\n", ARG_CONTAINER, ARG_TEST);
-			std::exit(-1);
+			MSG_AND_EXIT_FAILURE("[ERROR] container \"%s\" has no test \"%s\" defined\n", ARG_CONTAINER, ARG_TEST)
 		}
 	} else {
-		// error
-		std::fprintf(stderr, "[ERROR] container \"%s\" does not exist\n", ARG_CONTAINER);
-		std::exit(-1);
+		MSG_AND_EXIT_FAILURE("[ERROR] container \"%s\" does not exist\n", ARG_CONTAINER)
 	}
 }
