@@ -4,12 +4,14 @@
 /********** Included Headers **********/
 
 // C++ library
-#include <iostream> 	// std::ostream, std::cerr
-#include <functional> 	// std::function
-#include <map> 			// std::map
+#include <iostream> 		// std::ostream, std::cerr
+#include <functional> 		// std::function, std::hash
+#include <unordered_map> 	// std::unordered_map
+#include <string_view> 		// std::string_view
 
 // C library
-#include <cstring> // std::strcmp
+#include <cstring> 	// std::strcmp
+#include <cstddef> 	// std::size_t
 
 /********** cmdline_parser.h **********/
 
@@ -18,26 +20,45 @@ namespace parser {
 	/********** Functors **********/
 	
 	/**
-	 * A c-style string comparison functor, assumes the strings are null-terminated.
-	 * Allows member access through std::map::operator[] using a null-terminated 
-	 * character string as key.
+	 * A C-style null-terminated character string comparison functor. Checks if two
+	 * C-strings match.
+	 * Allows for proper use of an std::unordered_map object that uses C-strings for
+	 * its keys.
 	*/
 	struct cstring_cmp {
-		/** Comparison predicate, compares a string to a key in the map. */
 		bool operator()(const char* lhs, const char* rhs) const {
 			return (
 				(lhs && rhs) && 			// nullptr checks
-				(std::strcmp(lhs, rhs) < 0) // comparing strings
-			); // FIXME: strcmp could cause a buffer overflow, look into a way of using strncmp here instead
+				(!std::strcmp(lhs, rhs)) 	// check if strings match
+			);
+		}
+	};
+	
+	/**
+	 * A C-style null-terminated character string hashing function. Encapsulates a 
+	 * C-string into an std::string_view object to make use of std::hash possible.
+	 * Allows for proper use of an std::unordered_map object that uses C-strings for
+	 * its keys.
+	*/
+	struct cstring_hash {
+		std::size_t operator()(const char* str) const {
+			return std::hash<std::string_view>{}(std::string_view(str)); // brace-initialize unamed hash object and invoke operator()
 		}
 	};
 
 	/********** Type Definitions **********/
 
-	typedef const char* 								arg_t; 			/** Command line argument type. A C-style null-terminated character string. */
-	typedef std::function<int(void)> 					unit_t; 		/** Unit test function pointer type. */
-	typedef std::map<arg_t, unit_t, cstring_cmp> 		cllbkmap_t; 	/** Callback map type. Maps <test> cmd line args to their respective unit tests. */
-	typedef std::map<arg_t, cllbkmap_t, cstring_cmp> 	containers_t; 	/** Container map type. Maps <container> cmd line args to their respective callback maps. */
+	/** Command line argument type. */
+	typedef const char* arg_t;
+
+	/** Unit test function pointer type. */
+	typedef std::function<int(void)> unit_t;
+
+	/** Unit test callback map type. Maps <test> cmd line args to their respective unit test functions. */
+	typedef std::unordered_map<arg_t, unit_t, cstring_hash, cstring_cmp> cllbkmap_t;
+	
+	/** Container map type. Maps <container> cmd line args to their respective unit test callback maps (map of maps). */
+	typedef std::unordered_map<arg_t, cllbkmap_t, cstring_hash, cstring_cmp> containers_t;
 
 	/********** Command Line Parser Functions (declarations) **********/
 
